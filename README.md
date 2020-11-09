@@ -4,9 +4,9 @@
 * https://trello.com/PROJECT_NAME/
 
 ## Team
-* [STUDENT_NAME](https://github.com/USER_NAME)
-* [STUDENT_NAME](https://github.com/USER_NAME)
-* [STUDENT_NAME](https://github.com/USER_NAME)
+* [Nikolai Strässle](https://github.com/USER_NAME)
+* [Steiner Pascal](https://github.com/USER_NAME)
+* [Martin Radinger](https://github.com/USER_NAME)
 
 ## Docs
 * [Slides](Docs/Slides.pdf) (PDF)
