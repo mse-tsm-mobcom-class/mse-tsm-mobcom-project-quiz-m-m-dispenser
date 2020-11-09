@@ -4,9 +4,9 @@
 * https://trello.com/b/6AdpjjWI/mm
 
 ## Team
-* [Nikolai Strässle](https://github.com/USER_NAME)
-* [Steiner Pascal](https://github.com/USER_NAME)
-* [Martin Radinger](https://github.com/USER_NAME)
+* [Nikolai Strässle](https://github.com/nikolaistraessle)
+* [Steiner Pascal](https://github.com/SteinerPascal)
+* [Martin Radinger](https://github.com/seros76)
 
 ## Docs
 * [Slides](Docs/Slides.pdf) (PDF)
