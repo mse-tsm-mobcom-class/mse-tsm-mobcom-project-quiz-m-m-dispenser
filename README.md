@@ -1,7 +1,7 @@
 # MSE TSM MobCom Project PROJECT_NAME
 
 ## Agile Board
-* https://trello.com/PROJECT_NAME/
+* https://trello.com/b/6AdpjjWI/mm
 
 ## Team
 * [Nikolai Strässle](https://github.com/USER_NAME)
