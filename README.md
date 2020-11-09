@@ -1,4 +1,4 @@
-# MSE TSM MobCom Project PROJECT_NAME
+# MSE TSM MobCom Project Quiz giving M&M as reward
 
 ## Agile Board
 * https://trello.com/b/6AdpjjWI/mm
