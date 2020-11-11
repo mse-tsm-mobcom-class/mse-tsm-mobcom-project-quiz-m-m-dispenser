@@ -8,11 +8,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     public static final String QUESTION_NUMBER = "com.example.quiz.extra.MESSAGE";
-    private static final String LOG_TAG = Question.class.getSimpleName();
+    private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private Button btnStartQuizButton;
     private NumberPicker npNumberOfQuestions;
     private int QuestionNumber;
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 //start Quiz Intent
                 Bundle extras = new Bundle();
                 extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
-                Intent intent = new Intent(MainActivity.this, Question.class);
+                Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
 
                 intent.putExtras(extras);
                 startActivity(intent);
