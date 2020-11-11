@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Question">
+
+    <nl.dionsegijn.konfetti.KonfettiView
+        android:id="@+id/viewKonfetti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/quiz_progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView_questionProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/quiz_progressBar"
+        android:layout_centerHorizontal="true"
+        android:text="@string/question_ProgressTest"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/quiz_progressBar" />
+
+    <!-- Child linear layout with vertical orientation -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView_questionProgress"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/textView_dispenserState"
+        app:layout_constraintTop_toBottomOf="@+id/textView_questionProgress">
+
+        <TextView
+            android:id="@+id/textView_questionText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:text="@string/question"
+            android:textAlignment="center"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/textView_answerA"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_question"
+            android:layout_marginTop="@dimen/margin_question"
+            android:layout_marginRight="@dimen/margin_question"
+            android:layout_marginBottom="@dimen/margin_question"
+            android:background="@color/design_default_color_secondary"
+            android:clickable="true"
+            android:text="@string/answer_a"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            tools:layout_editor_absoluteX="144dp"
+            tools:layout_editor_absoluteY="389dp" />
+
+        <TextView
+            android:id="@+id/textView_answerB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_question"
+            android:layout_marginTop="@dimen/margin_question"
+            android:layout_marginRight="@dimen/margin_question"
+            android:layout_marginBottom="@dimen/margin_question"
+            android:background="@color/design_default_color_secondary"
+            android:clickable="true"
+            android:text="@string/answer_b"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            tools:layout_editor_absoluteX="146dp"
+            tools:layout_editor_absoluteY="319dp" />
+
+        <TextView
+            android:id="@+id/textView_answerC"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_question"
+            android:layout_marginTop="@dimen/margin_question"
+            android:layout_marginRight="@dimen/margin_question"
+            android:layout_marginBottom="@dimen/margin_question"
+            android:background="@color/design_default_color_secondary"
+            android:clickable="true"
+            android:text="@string/answer_c"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            tools:layout_editor_absoluteX="149dp"
+            tools:layout_editor_absoluteY="245dp" />
+
+        <TextView
+            android:id="@+id/textView_answerD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_question"
+            android:layout_marginTop="@dimen/margin_question"
+            android:layout_marginRight="@dimen/margin_question"
+            android:layout_marginBottom="@dimen/margin_question"
+            android:background="@color/design_default_color_secondary"
+            android:clickable="true"
+            android:text="@string/answer_d"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            tools:layout_editor_absoluteX="146dp"
+            tools:layout_editor_absoluteY="455dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView_dispenserState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/dispenserState"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
