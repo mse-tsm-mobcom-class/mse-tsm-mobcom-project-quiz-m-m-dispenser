@@ -1,4 +1,4 @@
-# PROJECT_NAME Android App
+# Quiz M&M Android App
 
 ## Prerequisites
 * Android smartphone with BLE, API Level 26+
