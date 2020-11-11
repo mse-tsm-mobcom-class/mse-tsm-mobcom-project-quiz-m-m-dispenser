@@ -18,7 +18,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".Question"
+            android:name=".QuestionActivity"
             android:label="@string/title_question"
             android:parentActivityName=".MainActivity">
             <meta-data
