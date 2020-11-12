@@ -8,8 +8,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mse.quiz.R;
-
 public class QuizResultActivity extends AppCompatActivity {
 
     TextView results;

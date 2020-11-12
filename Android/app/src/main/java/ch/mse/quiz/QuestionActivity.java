@@ -11,8 +11,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mse.quiz.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +19,8 @@ import nl.dionsegijn.konfetti.models.Shape;
 import nl.dionsegijn.konfetti.models.Size;
 
 public class QuestionActivity extends AppCompatActivity {
-    public static final String QUESTION_NUMBER = "com.example.quiz.extra.MESSAGE";
-    public static final String SCORE = "com.example.quiz.extra.MESSAGE";
+    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.MESSAGE";
+    public static final String SCORE = "ch.mse.quiz.extra.MESSAGE";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
 
     private int correctAnswer;
