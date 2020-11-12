@@ -1,6 +1,4 @@
-package com.example.quiz;
-
-import androidx.appcompat.app.AppCompatActivity;
+package ch.mse.quiz;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,6 +8,10 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.mse.quiz.R;
 
 import java.util.ArrayList;
 import java.util.List;
