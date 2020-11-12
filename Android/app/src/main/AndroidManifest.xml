@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mse.quiz">
+    package="ch.mse.quiz">
 
     <application
         android:allowBackup="true"
@@ -10,22 +10,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Quiz">
         <activity
-            android:name="com.mse.quiz.ch.mse.quiz.QuizResultActivity"
+            android:name="ch.mse.quiz.QuizResultActivity"
             android:label="@string/title_results"
-            android:parentActivityName="com.mse.quiz.ch.mse.quiz.MainActivity">
+            android:parentActivityName="ch.mse.quiz.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mse.quiz.ch.mse.quiz.MainActivity" />
+                android:value="ch.mse.quiz.MainActivity" />
         </activity>
         <activity
-            android:name="com.mse.quiz.ch.mse.quiz.QuestionActivity"
+            android:name="ch.mse.quiz.QuestionActivity"
             android:label="@string/title_question"
-            android:parentActivityName="com.mse.quiz.ch.mse.quiz.MainActivity">
+            android:parentActivityName="ch.mse.quiz.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mse.quiz.ch.mse.quiz.MainActivity" />
+                android:value="ch.mse.quiz.MainActivity" />
         </activity>
-        <activity android:name="com.mse.quiz.ch.mse.quiz.MainActivity">
+        <activity android:name="ch.mse.quiz.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

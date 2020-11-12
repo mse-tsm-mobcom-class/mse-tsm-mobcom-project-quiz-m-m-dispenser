@@ -9,10 +9,8 @@ import android.widget.NumberPicker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.mse.quiz.R;
-
 public class MainActivity extends AppCompatActivity {
-    public static final String QUESTION_NUMBER = "com.example.quiz.extra.MESSAGE";
+    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.MESSAGE";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private Button btnStartQuizButton;
     private NumberPicker npNumberOfQuestions;
