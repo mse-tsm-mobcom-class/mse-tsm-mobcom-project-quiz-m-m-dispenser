@@ -21,6 +21,7 @@ public class BleGattCallback extends BluetoothGattCallback {
     private BluetoothGattCharacteristic mmDispenserDispenseCharacteristic = null;
     private BluetoothGatt gatt;
     private boolean dispenserState = false;
+    private boolean isConnected = false;
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -28,6 +29,7 @@ public class BleGattCallback extends BluetoothGattCallback {
         if (newState == BluetoothProfile.STATE_CONNECTED) {
             Log.i(TAG, "Connected to GATT server.");
             gatt.discoverServices();
+            this.isConnected = true;
         }
     }
 
@@ -90,5 +92,9 @@ public class BleGattCallback extends BluetoothGattCallback {
 
     public boolean isDispenserState() {
         return dispenserState;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
     }
 }
