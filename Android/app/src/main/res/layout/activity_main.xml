@@ -1,41 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="ch.mse.quiz.MainActivity">
 
-    <Button
-        android:id="@+id/button_startQuiz"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/design_default_color_primary"
-        android:text="@string/start_quiz"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/mainLogo"
         android:layout_width="318dp"
         android:layout_height="240dp"
-        app:layout_constraintBottom_toTopOf="@+id/button_startQuiz"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/quiz_image_description"
         app:srcCompat="@drawable/quiz" />
 
+    <ScrollView
+        android:id="@+id/svBleDevices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/mainLogo">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvLabelSelectDevice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@id/spBleScanResult"
+                android:text="@string/ble_label_select_device" />
+
+            <Spinner
+                android:id="@+id/spBleScanResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+    </ScrollView>
+
     <NumberPicker
+
         android:id="@+id/npQuestionNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        app:layout_constraintBottom_toTopOf="@+id/button_startQuiz"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        android:layout_below="@id/svBleDevices"
+        android:layout_centerHorizontal="true" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/button_startQuiz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/npQuestionNumber"
+        android:layout_centerHorizontal="true"
+        android:background="@color/design_default_color_primary"
+        android:text="@string/start_quiz"
+        android:textColor="@color/white" />
+
+    <Button
+        android:id="@+id/btnDispense"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_startQuiz"
+        android:layout_centerHorizontal="true"
+        android:text="@string/dispenserState" />
+
+</RelativeLayout>
