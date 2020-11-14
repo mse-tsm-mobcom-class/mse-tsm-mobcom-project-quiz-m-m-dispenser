@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private NumberPicker npNumberOfQuestions;
     private static final int REQUEST_ENABLE_BT = 1;
     private final PermissionService permissionService = new PermissionService();
-    private int QuestionNumber;
     private final HashMap<String, BluetoothDevice> devices = new HashMap<>();
     private final BleGattCallback bleGattCallback = new BleGattCallback();
     private Spinner spBleScanResult;
@@ -49,6 +48,49 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+        initBleDeviceSelection();
+
+        this.permissionService.checkPermissions(MainActivity.this);
+        this.startBleScanner();
+
+        Button btnDispense = findViewById(R.id.btnDispense);
+        btnDispense.setOnClickListener(v -> bleGattCallback.dispense());
+
+        initQuiz();
+
+        Log.d(LOG_TAG, "-----");
+        Log.d(LOG_TAG, "on create");
+    }
+
+    private void initQuiz() {
+        btnStartQuizButton = findViewById(R.id.button_startQuiz);
+        btnStartQuizButton.setEnabled(this.bleGattCallback.isConnected());
+
+
+        npNumberOfQuestions = findViewById(R.id.npQuestionNumber);
+
+        //how many questions to answer?
+        npNumberOfQuestions.setMinValue(0);
+        npNumberOfQuestions.setMaxValue(7);
+        npNumberOfQuestions.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            //tvNumberOfQuestions.setText("number of questions : " + newVal);
+            Log.d(LOG_TAG, "question count selected");
+        });
+
+        btnStartQuizButton.setOnClickListener(v -> {
+            Log.d(LOG_TAG, "start Quiz!");
+
+            //start Quiz Intent
+            Bundle extras = new Bundle();
+            extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
+            Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
+
+            intent.putExtras(extras);
+            startActivity(intent);
+        });
+    }
+
+    private void initBleDeviceSelection() {
         spBleScanResult = findViewById(R.id.spBleScanResult);
         adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.support_simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
@@ -74,48 +116,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(LOG_TAG, "no device selected");
             }
         });
-
-        this.permissionService.checkPermissions(MainActivity.this);
-        this.startBleScanner();
-
-
-        btnStartQuizButton = findViewById(R.id.button_startQuiz);
-        btnStartQuizButton.setEnabled(this.permissionService.hasRequiredPermissions());
-
-        Button btnDispense = findViewById(R.id.btnDispense);
-        btnDispense.setOnClickListener(v -> bleGattCallback.dispense());
-
-        npNumberOfQuestions = findViewById(R.id.npQuestionNumber);
-
-        //how many questions to answer?
-        npNumberOfQuestions.setMinValue(0);
-        npNumberOfQuestions.setMaxValue(7);
-        npNumberOfQuestions.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                //tvNumberOfQuestions.setText("number of questions : " + newVal);
-                Log.d(LOG_TAG, "question count selected");
-            }
-        });
-
-        btnStartQuizButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(LOG_TAG, "start Quiz!");
-                //TODO: Bluetooth connection setup
-
-                //start Quiz Intent
-                Bundle extras = new Bundle();
-                extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
-                Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
-
-                intent.putExtras(extras);
-                startActivity(intent);
-            }
-        });
-
-        Log.d(LOG_TAG, "-----");
-        Log.d(LOG_TAG, "on create");
     }
 
     @Override
