@@ -3,8 +3,6 @@ package ch.mse.quiz;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -38,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1;
     private final PermissionService permissionService = new PermissionService();
     private final HashMap<String, BluetoothDevice> devices = new HashMap<>();
+    private static final String SPINNER_DEFAULT_VALUE = "Select dispenser";
     private final BleGattCallback bleGattCallback = new BleGattCallback();
     private Spinner spBleScanResult;
     private ArrayAdapter<String> adapter;
@@ -47,11 +46,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         initBleDeviceSelection();
 
-        this.permissionService.checkPermissions(MainActivity.this);
-        this.startBleScanner();
+        initPermissions();
 
         Button btnDispense = findViewById(R.id.btnDispense);
         btnDispense.setOnClickListener(v -> bleGattCallback.dispense());
@@ -60,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, "-----");
         Log.d(LOG_TAG, "on create");
+    }
+
+    private void initPermissions() {
+        this.permissionService.checkPermissions(MainActivity.this);
+        this.startBleScanner();
     }
 
     private void initQuiz() {
@@ -72,10 +74,6 @@ public class MainActivity extends AppCompatActivity {
         //how many questions to answer?
         npNumberOfQuestions.setMinValue(0);
         npNumberOfQuestions.setMaxValue(7);
-        npNumberOfQuestions.setOnValueChangedListener((picker, oldVal, newVal) -> {
-            //tvNumberOfQuestions.setText("number of questions : " + newVal);
-            Log.d(LOG_TAG, "question count selected");
-        });
 
         btnStartQuizButton.setOnClickListener(v -> {
             Log.d(LOG_TAG, "start Quiz!");
@@ -94,14 +92,14 @@ public class MainActivity extends AppCompatActivity {
         spBleScanResult = findViewById(R.id.spBleScanResult);
         adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.support_simple_spinner_dropdown_item);
         adapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
-        adapter.add("");
+        adapter.add(SPINNER_DEFAULT_VALUE);
         spBleScanResult.setAdapter(adapter);
 
         spBleScanResult.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 TextView textView = (TextView) view;
-                if (null != textView && !textView.getText().toString().equals("")) {
+                if (null != textView && !textView.getText().toString().equals(SPINNER_DEFAULT_VALUE)) {
                     BluetoothDevice device = devices.get(textView.getText().toString());
                     if (null != device) {
                         Log.i(LOG_TAG, device.getAddress());
@@ -137,21 +135,8 @@ public class MainActivity extends AppCompatActivity {
             BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
             if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
                 Log.d(LOG_TAG, "BLE enabled");
-                BleService service = new BleService(bluetoothAdapter.getBluetoothLeScanner());
-                service.scan(new ScanCallback() {
-                    @Override
-                    public void onScanResult(int callbackType, ScanResult result) {
-                        super.onScanResult(callbackType, result);
-                        if (null != result && null != result.getDevice()) {
-                            String name = result.getDevice().getName();
-                            if (null != name && !devices.containsKey(name)) {
-                                devices.put(name, result.getDevice());
-                                adapter.add(name);
-                                adapter.notifyDataSetChanged();
-                            }
-                        }
-                    }
-                });
+                BleService service = new BleService(bluetoothAdapter.getBluetoothLeScanner(), this.devices, this.adapter);
+                service.scan();
             } else {
                 Log.d(TAG, "BLE not enabled");
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);

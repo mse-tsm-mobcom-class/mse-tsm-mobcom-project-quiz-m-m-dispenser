@@ -8,6 +8,7 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -86,7 +87,7 @@ public class BleGattCallback extends BluetoothGattCallback {
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         super.onCharacteristicChanged(gatt, characteristic);
         if (characteristic.getUuid().equals(mmDispenserStateCharacteristicUuid)) {
-            this.dispenserState = characteristic.getValue() == dispenseValue;
+            this.dispenserState = Arrays.equals(characteristic.getValue(), dispenseValue);
         }
     }
 
