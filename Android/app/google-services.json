@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:998681202381:android:1c94d662ebd7a6e33fe384",
+        "mobilesdk_app_id": "1:998681202381:android:d74aaf13bb8db62c3fe384",
         "android_client_info": {
-          "package_name": "com.example.firebasetest3"
+          "package_name": "ch.mse.quiz"
         }
       },
       "oauth_client": [
@@ -37,9 +37,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:998681202381:android:6b6f9a30922492eb3fe384",
+        "mobilesdk_app_id": "1:998681202381:android:1c94d662ebd7a6e33fe384",
         "android_client_info": {
-          "package_name": "com.example.quiz"
+          "package_name": "com.example.firebasetest3"
         }
       },
       "oauth_client": [
