@@ -19,16 +19,16 @@ class FirebaseDatabase : AppCompatActivity() {
         setContentView(R.layout.activity_firebase_database)
     }
 
-    fun storeQuestion(view: View){
+    fun storeQuestion(view: View) {
         // Write a message to the database
         val user = auth.getCurrentUser()
-        val obj = question("Does this work?2",2, arrayOf<String>("yes","no","maybe"))
+        val obj = question("Does this work?2", 2, arrayOf<String>("yes", "no", "maybe"))
         val useruid = user?.getUid()
-        if(useruid!= null){
+        if (useruid != null) {
             myRef.child(useruid).setValue(obj)
-        } else
-        { Toast.makeText(baseContext, "Authentication  of useruid failed.",
-                Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(baseContext, "Authentication  of useruid failed.",
+                    Toast.LENGTH_SHORT).show()
         }
     }
 }
