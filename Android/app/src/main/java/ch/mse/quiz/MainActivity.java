@@ -1,5 +1,6 @@
 package ch.mse.quiz;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -15,6 +16,11 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.quiz.firebase.FirebaseLogin;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -41,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private Spinner spBleScanResult;
     private ArrayAdapter<String> adapter;
 
+    //Firebase
+    private FirebaseAuth mAuth;
+    static int LAUNCH_SECOND_ACTIVITY = 11;
+    public static final String USER_AUTH = "user_auth";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +68,37 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, "-----");
         Log.d(LOG_TAG, "on create");
+
+        // init firebase auth and get user
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        // if user is not logged in then redirect to login page
+        if(currentUser == null) {
+            Intent i = new Intent(this, FirebaseLogin.class);
+            startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+        } else {
+            Toast.makeText(this, "Loged in as:" + currentUser.getEmail().toString(),
+                    Toast.LENGTH_LONG).show();
+        }
     }
+
+    //OnActivityResult for LoginScreen
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                String result=data.getStringExtra("result");
+                Toast.makeText(this, "Loged in as: "+ result.toString(),
+                        Toast.LENGTH_LONG).show();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText(this, "Authentication failed.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    }//onActivityResult
 
     private void initPermissions() {
         this.permissionService.checkPermissions(MainActivity.this);
@@ -146,4 +187,5 @@ public class MainActivity extends AppCompatActivity {
             Log.d(LOG_TAG, "BLE not available");
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.quiz.firebase
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
@@ -9,28 +10,28 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
-import com.example.quiz.R
+import androidx.appcompat.app.AppCompatActivity
+import ch.mse.quiz.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.ktx.Firebase
+
 
 class FirebaseLogin : AppCompatActivity() {
     companion object {
         private val TAG = "Firebase"
     }
+
     // TESTUSER
     val email = "testuser@testdomain.com"
     val password = "password"
-    lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_firebase_login)
-        auth = Firebase.auth
+        // init firebase auth and get user
+        auth = FirebaseAuth.getInstance()
     }
 
 
@@ -65,14 +66,17 @@ class FirebaseLogin : AppCompatActivity() {
         if (!validateForm()) {
             return
         }
-        //showProgressBar()
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithEmail:success")
                         val user = auth.currentUser
-                        updateUI(user)
+                        val returnIntent = Intent()
+                        val result = user?.email
+                        returnIntent.putExtra("result", result)
+                        setResult(Activity.RESULT_OK, returnIntent)
+                        finish()
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
@@ -83,7 +87,31 @@ class FirebaseLogin : AppCompatActivity() {
                     if (!task.isSuccessful) {
                         findViewById<EditText>(R.id.status).setText(R.string.auth_failed)
                     }
-                    //hideProgressBar()
+                }
+    }
+
+    fun createAccount(view: View) {
+        val email = findViewById<EditText>(R.id.fieldEmail).text.toString()
+        val password = findViewById<EditText>(R.id.fieldPassword).text.toString()
+        Log.d(TAG, "createAccount:$email")
+        if (!validateForm()) {
+            return
+        }
+
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "createUserWithEmail:success")
+                        val user = auth.currentUser
+                        updateUI(user)
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                        Toast.makeText(baseContext, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show()
+                        updateUI(null)
+                    }
                 }
     }
 
