@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.mse.quiz.firebase.FirebaseDB;
 import nl.dionsegijn.konfetti.KonfettiView;
 import nl.dionsegijn.konfetti.models.Shape;
 import nl.dionsegijn.konfetti.models.Size;
@@ -111,14 +112,9 @@ public class QuestionActivity extends AppCompatActivity {
     //TODO: read random questions from FirebaseDB
     private List<question> getQuestions() {
         Log.d(LOG_TAG, "new question list created!");
+        FirebaseDB db = new FirebaseDB();
+        db.getQuestions("Geography");
 
-        List<question> questions = new ArrayList<>();
-
-        String question = "What is the capital of France?";
-        String[] answers = {"Germany", "Switzerland", "France", "USA"};
-        for (int i = 0; i < questionNumber; i++) {
-            questions.add(new question(question, 2, answers));
-        }
 
         return questions;
     }
