@@ -7,14 +7,6 @@
     android:orientation="vertical"
     android:weightSum="4">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:indeterminate="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        style="?android:attr/progressBarStyleHorizontal"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -30,14 +22,14 @@
 
         <EditText
             android:id="@+id/status"
-            android:layout_width="80dp"
-            android:layout_height="55dp"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
             android:text="@string/signed_out" />
 
         <EditText
             android:id="@+id/detail"
-            android:layout_width="77dp"
-            android:layout_height="57dp"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
             tools:text="Firebase User ID: 123456789abc" />
     </LinearLayout>
 
@@ -53,7 +45,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:paddingRight="16dp"
+            android:layout_marginBottom="20dp">
 
             <EditText
                 android:id="@+id/fieldEmail"
@@ -82,16 +75,6 @@
             android:paddingRight="16dp">
 
             <Button
-                android:id="@+id/emailSignInButton"
-                android:layout_marginStart="@dimen/button_horizontal_margin"
-                android:layout_marginEnd="@dimen/button_horizontal_margin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="signIn"
-                android:text="@string/sign_in" />
-
-            <Button
                 android:id="@+id/emailCreateAccountButton"
                 android:layout_marginStart="@dimen/button_horizontal_margin"
                 android:layout_marginEnd="@dimen/button_horizontal_margin"
@@ -100,45 +83,6 @@
                 android:layout_weight="1"
                 android:onClick="createAccount"
                 android:text="@string/create_account" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/signedInButtons"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:orientation="horizontal"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:visibility="gone">
-
-            <Button
-                android:id="@+id/signOutButton"
-                android:layout_marginStart="@dimen/button_horizontal_margin"
-                android:layout_marginEnd="@dimen/button_horizontal_margin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/sign_out" />
-
-            <Button
-                android:id="@+id/verifyEmailButton"
-                android:layout_marginStart="@dimen/button_horizontal_margin"
-                android:layout_marginEnd="@dimen/button_horizontal_margin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/verify_email" />
-
-            <Button
-                android:id="@+id/reloadButton"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_marginStart="@dimen/button_horizontal_margin"
-                android:layout_marginEnd="@dimen/button_horizontal_margin"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/reload" />
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>
