@@ -1,5 +1,5 @@
 #ignore firebase api keystore
-./Android/app/google-services.json
+Android/app/google-services.json
 
 # Built application files
 *.apk
