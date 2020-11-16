@@ -1,8 +1,10 @@
 package ch.mse.quiz;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -19,18 +21,19 @@ import nl.dionsegijn.konfetti.models.Shape;
 import nl.dionsegijn.konfetti.models.Size;
 
 public class QuestionActivity extends AppCompatActivity {
-    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.MESSAGE";
+    public static final String QUESTIONNUMBER = "ch.mse.quiz.extra.MESSAGE";
     public static final String SCORE = "ch.mse.quiz.extra.MESSAGE";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
-
+    CountDownTimer countDownTimer;
     private int correctAnswer;
     private int currentQuestion;
     private int questionNumber;
+    private String questionTopic;
     private int score;
 
-    private List<question> questions;
+    public List<question> questions;
 
-    private ProgressBar pgTimer;
+    private ProgressBar pbTimer;
     private TextView tvProgress;
     private TextView tvQuestion;
 
@@ -47,10 +50,10 @@ public class QuestionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_question);
 
         //set initial values
-        currentQuestion = 0;
+        currentQuestion = 1;
         score = 0;
 
-        pgTimer = findViewById(R.id.quiz_progressBar);
+        pbTimer = findViewById(R.id.quiz_progressBar);
         tvProgress = findViewById(R.id.textView_questionProgress);
         konfettiView = findViewById(R.id.viewKonfetti);
         tvQuestion = findViewById(R.id.textView_questionText);
@@ -59,14 +62,19 @@ public class QuestionActivity extends AppCompatActivity {
         buttonAnswerC = findViewById(R.id.textView_answerC);
         buttonAnswerD = findViewById(R.id.textView_answerD);
 
+
         //how many questions to do? get data from MainActivity calling
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         questionNumber = extras.getInt(MainActivity.QUESTION_NUMBER, 5);
-        tvProgress.setText("Question " + currentQuestion + " out of " + questionNumber);
+        questionTopic = extras.getString(MainActivity.QUESTION_TOPIC);
+        tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
 
-        //read right amount of questions from DB
+        //read required amount of questions from DB
         questions = getQuestions();
+
+        //set first question UI
+        createQuestion(currentQuestion-1);
 
         //Button Listeners
         buttonAnswerA.setOnClickListener(new View.OnClickListener() {
@@ -101,13 +109,29 @@ public class QuestionActivity extends AppCompatActivity {
             }
         });
 
-        //create first question
-        createQuestion(currentQuestion);
-
         Log.d(LOG_TAG, "-----");
         Log.d(LOG_TAG, "on create");
     }
+/*
+    //timer
+    private void startCountdownTimer() {
+        int i = 0;
+        pbTimer.setProgress(i);
+        countDownTimer = new CountDownTimer(5000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                i++;
+                pbTimer.setProgress((int) i * 100/(5000/1000));
+            }
 
+            @Override
+            public void onFinish() {
+                i++;
+                pbTimer.setProgress(100);
+            }
+        }
+    }
+    */
     //TODO: read random questions from FirebaseDB
     private List<question> getQuestions() {
         Log.d(LOG_TAG, "new question list created!");
@@ -116,7 +140,7 @@ public class QuestionActivity extends AppCompatActivity {
 
         String question = "What is the capital of France?";
         String[] answers = {"Germany", "Switzerland", "France", "USA"};
-        for (int i = 0; i < questionNumber; i++) {
+        for (int i = 0; i <= questionNumber; i++) {
             questions.add(new question(question, 2, answers));
         }
 
@@ -233,10 +257,11 @@ public class QuestionActivity extends AppCompatActivity {
             }
         }
 
-        //more questions to answer? if not, display quiz results
-        if (currentQuestion < questionNumber) {
+        //more questions to answer? create new question, otherwise display quiz results
+        if (currentQuestion <= questionNumber) {
+            //TODO: timedelay, reset button color, reset timer
             createQuestion(currentQuestion);
-            tvProgress.setText("Question " + currentQuestion + " out of " + questionNumber);
+            tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
         } else {
             displayResult();
         }
@@ -248,7 +273,7 @@ public class QuestionActivity extends AppCompatActivity {
     private void displayResult() {
         Log.d(LOG_TAG, "display QuizResultActivity!");
         Bundle extras = new Bundle();
-        extras.putInt(QUESTION_NUMBER, questionNumber);
+        extras.putInt(QUESTIONNUMBER, questionNumber);
         extras.putInt(SCORE, score);
         Intent intent = new Intent(this, QuizResultActivity.class);
         intent.putExtras(extras);

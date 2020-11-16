@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,9 +31,11 @@ import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
     public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.MESSAGE";
+    public static final String QUESTION_TOPIC = "ch.mse.quiz.extra.MESSAGE";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private Button btnStartQuizButton;
     private NumberPicker npNumberOfQuestions;
+    private NumberPicker npTopic;
     private static final int REQUEST_ENABLE_BT = 1;
     private final PermissionService permissionService = new PermissionService();
     private final HashMap<String, BluetoothDevice> devices = new HashMap<>();
@@ -66,27 +69,43 @@ public class MainActivity extends AppCompatActivity {
 
     private void initQuiz() {
         btnStartQuizButton = findViewById(R.id.button_startQuiz);
-        btnStartQuizButton.setEnabled(this.bleGattCallback.isConnected());
-
-
         npNumberOfQuestions = findViewById(R.id.npQuestionNumber);
+        npTopic = findViewById(R.id.npQuestionTopic);
 
         //how many questions to answer?
-        npNumberOfQuestions.setMinValue(0);
+        npNumberOfQuestions.setMinValue(1);
         npNumberOfQuestions.setMaxValue(7);
+        npNumberOfQuestions.setWrapSelectorWheel(false);
+
+        //which topic?
+        npTopic.setMinValue(1);
+        npTopic.setMaxValue(3);
+        //TODO: instead of hard coding, get available topic from firebase db
+        String [] topicSelection = {"Sports", "Celebrities", "Geography", "Android" };
+        npTopic.setDisplayedValues(topicSelection);
 
         btnStartQuizButton.setOnClickListener(v -> {
             Log.d(LOG_TAG, "start Quiz!");
 
-            //start Quiz Intent
-            Bundle extras = new Bundle();
-            extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
-            Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
+            //are we connected to M&M dispenser?
+            if(this.bleGattCallback.isConnected()) {
+                //yes? start Quiz Intent
+                String topic = topicSelection[npTopic.getValue()-1];
+                Bundle extras = new Bundle();
+                extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
+                extras.putString(QUESTION_TOPIC, topic);
+                Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
 
-            intent.putExtras(extras);
-            startActivity(intent);
+                intent.putExtras(extras);
+                startActivity(intent);
+            } else {
+                //no? ask user to connect first
+                Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
+            }
+
         });
     }
+
 
     private void initBleDeviceSelection() {
         spBleScanResult = findViewById(R.id.spBleScanResult);
@@ -118,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
-        btnStartQuizButton.setEnabled(this.permissionService.hasRequiredPermissions());
         this.startBleScanner();
     }
 

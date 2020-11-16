@@ -23,7 +23,7 @@ public class QuizResultActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         correctAnswers = extras.getInt(QuestionActivity.SCORE);
-        questions = extras.getInt(QuestionActivity.QUESTION_NUMBER);
+        questions = extras.getInt(QuestionActivity.QUESTIONNUMBER);
 
         results = findViewById(R.id.textView_results);
         results.setText("Your score is " + correctAnswers + " out of " + questions + " questions");
