@@ -69,13 +69,14 @@
                 android:id="@+id/npQuestionNumber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:descendantFocusability="blocksDescendants"
                 />
 
             <NumberPicker
                 android:id="@+id/npQuestionTopic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
+                android:descendantFocusability="blocksDescendants"
                 />
 
         </LinearLayout>

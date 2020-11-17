@@ -19,11 +19,12 @@ public class QuizResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz_result);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
         correctAnswers = extras.getInt(QuestionActivity.SCORE);
-        questions = extras.getInt(QuestionActivity.QUESTIONNUMBER);
+        questions = extras.getInt(QuestionActivity.QUESTION_NUMBER);
 
         results = findViewById(R.id.textView_results);
         results.setText("Your score is " + correctAnswers + " out of " + questions + " questions");

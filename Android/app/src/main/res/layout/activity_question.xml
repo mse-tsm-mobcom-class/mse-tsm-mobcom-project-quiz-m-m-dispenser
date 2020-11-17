@@ -11,13 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <ProgressBar
-        android:id="@+id/quiz_progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
+    <TextView
+        android:id="@+id/quiz_Timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:textAlignment="center"
+        android:text="@string/time"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -26,12 +25,12 @@
         android:id="@+id/textView_questionProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/quiz_progressBar"
+        android:layout_below="@id/quiz_Timer"
         android:layout_centerHorizontal="true"
         android:text="@string/question_ProgressTest"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/quiz_progressBar" />
+        app:layout_constraintTop_toBottomOf="@+id/quiz_Timer" />
 
     <!-- Child linear layout with vertical orientation -->
 

@@ -30,8 +30,8 @@ import ch.mse.quiz.permission.PermissionService;
 import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.MESSAGE";
-    public static final String QUESTION_TOPIC = "ch.mse.quiz.extra.MESSAGE";
+    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.NUMBER";
+    public static final String QUESTION_TOPIC = "ch.mse.quiz.extra.TOPIC";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private Button btnStartQuizButton;
     private NumberPicker npNumberOfQuestions;
@@ -88,20 +88,22 @@ public class MainActivity extends AppCompatActivity {
             Log.d(LOG_TAG, "start Quiz!");
 
             //are we connected to M&M dispenser?
-            if(this.bleGattCallback.isConnected()) {
+      //      if(this.bleGattCallback.isConnected()) {
                 //yes? start Quiz Intent
                 String topic = topicSelection[npTopic.getValue()-1];
+                int questionsToAnswer = npNumberOfQuestions.getValue();
                 Bundle extras = new Bundle();
-                extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
+                extras.putInt(QUESTION_NUMBER, questionsToAnswer);
                 extras.putString(QUESTION_TOPIC, topic);
-                Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
 
+                Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
                 intent.putExtras(extras);
+
                 startActivity(intent);
-            } else {
+    //        } else {
                 //no? ask user to connect first
-                Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
-            }
+   //             Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
+   //         }
 
         });
     }
