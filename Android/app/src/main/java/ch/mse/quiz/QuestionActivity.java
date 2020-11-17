@@ -9,6 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.ktx.Firebase;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ public class QuestionActivity extends AppCompatActivity {
     private int questionNumber;
     private int score;
 
-    private List<question> questions;
+    public List<question> questions;
 
     private ProgressBar pgTimer;
     private TextView tvProgress;
@@ -48,7 +50,7 @@ public class QuestionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_question);
 
         //set initial values
-        currentQuestion = 0;
+        currentQuestion = 1;
         score = 0;
 
         pgTimer = findViewById(R.id.quiz_progressBar);
@@ -65,9 +67,11 @@ public class QuestionActivity extends AppCompatActivity {
         Bundle extras = intent.getExtras();
         questionNumber = extras.getInt(MainActivity.QUESTION_NUMBER, 5);
         tvProgress.setText("Question " + currentQuestion + " out of " + questionNumber);
-
         //read right amount of questions from DB
         questions = getQuestions();
+        Log.d(LOG_TAG, questions.toString());
+
+
 
         //Button Listeners
         buttonAnswerA.setOnClickListener(new View.OnClickListener() {
@@ -112,9 +116,15 @@ public class QuestionActivity extends AppCompatActivity {
     //TODO: read random questions from FirebaseDB
     private List<question> getQuestions() {
         Log.d(LOG_TAG, "new question list created!");
-        FirebaseDB db = new FirebaseDB();
-        db.getQuestions("Geography");
 
+
+        List<question> questions = new ArrayList<>();
+
+        String question = "What is the capital of France?";
+        String[] answers = {"Germany", "Switzerland", "France", "USA"};
+        for (int i = 0; i < questionNumber; i++) {
+            questions.add(new question(question, 2, answers));
+        }
 
         return questions;
     }
@@ -137,6 +147,7 @@ public class QuestionActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         Log.d(LOG_TAG, "onStart");
     }
 

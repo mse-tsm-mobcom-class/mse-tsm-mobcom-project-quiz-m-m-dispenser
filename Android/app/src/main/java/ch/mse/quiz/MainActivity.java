@@ -30,6 +30,7 @@ import java.util.HashMap;
 
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
+import ch.mse.quiz.firebase.FirebaseDB;
 import ch.mse.quiz.permission.PermissionService;
 
 import static android.content.ContentValues.TAG;
@@ -63,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnDispense = findViewById(R.id.btnDispense);
         btnDispense.setOnClickListener(v -> bleGattCallback.dispense());
-
         initQuiz();
 
         Log.d(LOG_TAG, "-----");
