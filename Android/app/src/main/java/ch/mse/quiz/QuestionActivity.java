@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -18,10 +19,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import ch.mse.quiz.models.question;
+import ch.mse.quiz.ble.BleGattCallback;
 import nl.dionsegijn.konfetti.KonfettiView;
 import nl.dionsegijn.konfetti.models.Shape;
 import nl.dionsegijn.konfetti.models.Size;
@@ -29,10 +35,11 @@ import nl.dionsegijn.konfetti.models.Size;
 import static android.content.ContentValues.TAG;
 
 public class QuestionActivity extends AppCompatActivity {
-    public static final String QUESTIONNUMBER = "ch.mse.quiz.extra.MESSAGE";
-    public static final String SCORE = "ch.mse.quiz.extra.MESSAGE";
+    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.NUMBER";
+    public static final String SCORE = "ch.mse.quiz.extra.SCORE";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
-    CountDownTimer countDownTimer;
+    private CountDownTimer countDownTimer;
+    public int counter;
     private int correctAnswer;
     private int currentQuestion;
     private int questionNumber;
@@ -40,8 +47,9 @@ public class QuestionActivity extends AppCompatActivity {
     private int score;
 
     public ArrayList<question> questions = new ArrayList<question>();
+    private Handler handler = new Handler();
 
-    private ProgressBar pbTimer;
+    private TextView tvTimer;
     private TextView tvProgress;
     private TextView tvQuestion;
 
@@ -49,7 +57,7 @@ public class QuestionActivity extends AppCompatActivity {
     private TextView buttonAnswerB;
     private TextView buttonAnswerC;
     private TextView buttonAnswerD;
-
+    private TextView tvDispenserState;
     private KonfettiView konfettiView;
 
     //firebase
@@ -57,12 +65,16 @@ public class QuestionActivity extends AppCompatActivity {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference dbRef;
 
+    //BLE
+    private final BleGattCallback bleGattCallback = new BleGattCallback();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         tvProgress = findViewById(R.id.textView_questionProgress);
+        tvTimer = findViewById(R.id.quiz_Timer);
 
         //set initial values
         currentQuestion = 0;
@@ -70,15 +82,14 @@ public class QuestionActivity extends AppCompatActivity {
         //how many questions to do? get data from MainActivity calling
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        questionNumber = extras.getInt(MainActivity.QUESTION_NUMBER, 5);
+        questionNumber = extras.getInt(MainActivity.QUESTION_NUMBER);
         questionTopic = extras.getString(MainActivity.QUESTION_TOPIC);
 
         //read required amount of questions from DB
         getQuestions();
 
-
-
-        pbTimer = findViewById(R.id.quiz_progressBar);
+        tvDispenserState = findViewById(R.id.textView_dispenserState);
+        //pbTimer = findViewById(R.id.quiz_progressBar);
         konfettiView = findViewById(R.id.viewKonfetti);
         tvQuestion = findViewById(R.id.textView_questionText);
         buttonAnswerA = findViewById(R.id.textView_answerA);
@@ -122,6 +133,7 @@ public class QuestionActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "-----");
         Log.d(LOG_TAG, "on create");
     }
+
 /*
     //timer
     private void startCountdownTimer() {
@@ -198,6 +210,12 @@ public class QuestionActivity extends AppCompatActivity {
         super.onStart();
 
         Log.d(LOG_TAG, "onStart");
+
+        //set first question UI
+        tvDispenserState.setText("right answer, get M&M");
+        resetButtonColor();
+        createQuestion(currentQuestion-1);
+        startTimer();
     }
 
     @Override
@@ -230,32 +248,81 @@ public class QuestionActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onDestroy");
     }
 
-    //check for correct answer and change UI
-    private void submit(int answer) {
-        Log.d(LOG_TAG, "checking if answer correct");
-        currentQuestion = currentQuestion + 1;
-
-        //correct answer, fireworks!
-        if (answer == correctAnswer) {
-            score = score + 1;
-
-            konfettiView.build()
-                    .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
-                    .setDirection(0.0, 359.0)
-                    .setSpeed(1f, 5f)
-                    .setFadeOutEnabled(true)
-                    .setTimeToLive(2000L)
-                    .addShapes(Shape.Square.INSTANCE, Shape.Circle.INSTANCE)
-                    .addSizes(new Size(12, 5f))
-                    .setPosition(-50f, konfettiView.getWidth() + 50f, -50f, -50f)
-                    .streamFor(300, 5000L);
-
-        } else {
-            Toast.makeText(getBaseContext(), "Better luck next time!", Toast.LENGTH_SHORT).show();
+    private Runnable newQuestion = new Runnable() {
+        @Override
+        public void run() {
+            createQuestion(currentQuestion);
+            tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
+            resetButtonColor();
+            startTimer();
         }
+    };
 
-        //set button backgrounds accordingly
-        for (int i = 1; i <= 4; i++) {
+    private Runnable showResultActivity = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(LOG_TAG, "display QuizResultActivity!");
+            Bundle extras = new Bundle();
+            extras.putInt(QUESTION_NUMBER, questionNumber);
+            extras.putInt(SCORE, score);
+            Intent intent = new Intent(QuestionActivity.this, QuizResultActivity.class);
+            intent.putExtras(extras);
+            startActivity(intent);
+        }
+    };
+
+    //timer
+    private void startTimer() {
+        Log.d(LOG_TAG, "Time is running!");
+        counter = 30;
+
+        countDownTimer = new CountDownTimer(30000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                counter=counter-1;
+                tvTimer.setText(String.valueOf(counter));
+            }
+
+            @Override
+            public void onFinish() {
+                tvTimer.setText("time is up!");
+                endQuestion();
+            }
+        }.start();
+    }
+
+    //end timer
+    private void endTimer() {
+        countDownTimer.cancel();
+    }
+
+    //user out of time
+    private void endQuestion() {
+        Log.d(LOG_TAG, "User out of time, end question!");
+
+        currentQuestion = currentQuestion + 1;
+        Toast.makeText(getBaseContext(), "Time is up!", Toast.LENGTH_SHORT).show();
+        setButtonColor();
+
+        //more questions? then create new one
+        if(currentQuestion <= questionNumber) {
+            handler.postDelayed(newQuestion, 3000);
+        } else {
+            //otherwise result page
+            handler.postDelayed(showResultActivity, 3000);
+        }
+    }
+
+    //UI changers
+    private void resetButtonColor() {
+        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.grey));
+        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.grey));
+        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.grey));
+        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.grey));
+    }
+
+    private void setButtonColor() {
+        for (int i = 0; i <= 3; i++) {
             if (i == correctAnswer) {
                 switch (i) {
                     case 1:
@@ -288,28 +355,55 @@ public class QuestionActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+    //BLE
+    private void  dispenseCandy() {
+        bleGattCallback.dispense();
+        if(bleGattCallback.isDispenserState())
+            tvDispenserState.setText("grab your m&m");
+        else
+            tvDispenserState.setText("nothing to take");
+    }
+
+    //Quiz handlers
+    //check for correct answer and change UI
+    private void submit(int answer) {
+        Log.d(LOG_TAG, "checking if answer correct");
+        currentQuestion = currentQuestion + 1;
+
+        //correct answer, fireworks!
+        if (answer == correctAnswer) {
+            score = score + 1;
+
+            //visuals
+            konfettiView.build()
+                    .addColors(Color.YELLOW, Color.GREEN, Color.MAGENTA)
+                    .setDirection(0.0, 359.0)
+                    .setSpeed(1f, 5f)
+                    .setFadeOutEnabled(true)
+                    .setTimeToLive(2000L)
+                    .addShapes(Shape.Square.INSTANCE, Shape.Circle.INSTANCE)
+                    .addSizes(new Size(12, 5f))
+                    .setPosition(-50f, konfettiView.getWidth() + 50f, -50f, -50f)
+                    .streamFor(300, 3000L);
+
+            //activate M&M dispenser via BLE
+            dispenseCandy();
+
+        } else {
+            Toast.makeText(getBaseContext(), "Better luck next time!", Toast.LENGTH_SHORT).show();
+        }
+
+        //set button backgrounds: correct answer=green, wrong answer=red
+        setButtonColor();
 
         //more questions to answer? create new question, otherwise display quiz results
         if (currentQuestion <= questionNumber) {
-            //TODO: timedelay, reset button color, reset timer
-            createQuestion(currentQuestion);
+            endTimer();
+            handler.postDelayed(newQuestion, 3000);
         } else {
-            displayResult();
+            handler.postDelayed(showResultActivity,3000);
         }
-
-
-    }
-
-    // when game is over, display result
-    private void displayResult() {
-        Log.d(LOG_TAG, "display QuizResultActivity!");
-        Bundle extras = new Bundle();
-        extras.putInt(QUESTIONNUMBER, questionNumber);
-        extras.putInt(SCORE, score);
-        Intent intent = new Intent(this, QuizResultActivity.class);
-        intent.putExtras(extras);
-        startActivity(intent);
-
     }
 
 }

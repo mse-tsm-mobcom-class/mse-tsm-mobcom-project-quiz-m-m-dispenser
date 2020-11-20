@@ -44,8 +44,8 @@ import ch.mse.quiz.permission.PermissionService;
 import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.MESSAGE";
-    public static final String QUESTION_TOPIC = "ch.mse.quiz.extra.MESSAGE";
+    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.NUMBER";
+    public static final String QUESTION_TOPIC = "ch.mse.quiz.extra.TOPIC";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private Button btnStartQuizButton;
     private NumberPicker npNumberOfQuestions;
@@ -145,15 +145,15 @@ public class MainActivity extends AppCompatActivity {
                 Bundle extras = new Bundle();
                 extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue()-1);
                 extras.putString(QUESTION_TOPIC, topic);
-                Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
 
+                Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
                 intent.putExtras(extras);
+
                 startActivity(intent);
             //} else {
                 //no? ask user to connect first
                // Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
             //}
-
         });
     }
 
