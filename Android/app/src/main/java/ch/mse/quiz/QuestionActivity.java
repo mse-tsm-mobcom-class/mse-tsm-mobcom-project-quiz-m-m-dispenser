@@ -176,6 +176,7 @@ public class QuestionActivity extends AppCompatActivity {
                 //TODO: discuss UX for this matter and possibly add Toast to inform user
                 if(questionnr <= questionNumber) {
                     questionNumber = questionnr;
+                    Toast.makeText(getBaseContext(), "Nr. of question adjusted. Only " + questionnr + " questions available.", Toast.LENGTH_SHORT).show();
                 }
                 //set first question UI
                 createQuestion(currentQuestion);
