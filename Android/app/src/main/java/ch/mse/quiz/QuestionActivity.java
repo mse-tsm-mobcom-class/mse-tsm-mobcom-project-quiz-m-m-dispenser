@@ -191,7 +191,7 @@ public class QuestionActivity extends AppCompatActivity {
 
     //create new question from list and set UI accordingly
     private void createQuestion(int i) {
-        tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
+        tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber+1);
         question q = questions.get(i);
         tvQuestion.setText(q.getQuestion());
 
@@ -251,7 +251,7 @@ public class QuestionActivity extends AppCompatActivity {
         @Override
         public void run() {
             createQuestion(currentQuestion);
-            tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
+            tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber+1);
             resetButtonColor();
             startTimer();
         }
