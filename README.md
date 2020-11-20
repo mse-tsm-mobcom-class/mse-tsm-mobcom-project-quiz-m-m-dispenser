@@ -31,6 +31,7 @@ There is a very loose user authentication which is not thought as a security mea
 The Firebase realtime Database is used to store questions acording to different topics. A user can choose a topic in the beginning of a question round and the app will query the Realtime Database for a list of questions.
 
 Datastructure:
+```
 {
 	"topics": {
 		  "geography" : {
@@ -52,4 +53,5 @@ Datastructure:
 		  }
 	}
 }
+```
 
