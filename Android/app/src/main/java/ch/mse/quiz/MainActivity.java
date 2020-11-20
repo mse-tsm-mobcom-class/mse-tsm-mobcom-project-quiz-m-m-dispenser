@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,16 +22,23 @@ import android.widget.Toast;
 import com.example.quiz.firebase.FirebaseLogin;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
-import ch.mse.quiz.firebase.FirebaseDB;
 import ch.mse.quiz.permission.PermissionService;
 
 import static android.content.ContentValues.TAG;
@@ -54,23 +62,17 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     static int LAUNCH_SECOND_ACTIVITY = 11;
     public static final String USER_AUTH = "user_auth";
+    //Getting Firebase Instance
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference dbRef;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        initBleDeviceSelection();
-
-        initPermissions();
-
-        Button btnDispense = findViewById(R.id.btnDispense);
-        btnDispense.setOnClickListener(v -> bleGattCallback.dispense());
-        initQuiz();
-
-        Log.d(LOG_TAG, "-----");
-        Log.d(LOG_TAG, "on create");
-
+        npTopic = findViewById(R.id.npQuestionTopic);
         // init firebase auth and get user
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -82,6 +84,20 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Loged in as:" + currentUser.getEmail().toString(),
                     Toast.LENGTH_LONG).show();
         }
+        //Getting Reference to Root Node
+        dbRef = database.getReference("topics");
+        //firebase init finished
+
+        initBleDeviceSelection();
+
+        initPermissions();
+
+        Button btnDispense = findViewById(R.id.btnDispense);
+        btnDispense.setOnClickListener(v -> bleGattCallback.dispense());
+        initQuiz();
+
+        Log.d(LOG_TAG, "-----");
+        Log.d(LOG_TAG, "on create");
     }
 
     //OnActivityResult for LoginScreen
@@ -110,43 +126,66 @@ public class MainActivity extends AppCompatActivity {
     private void initQuiz() {
         btnStartQuizButton = findViewById(R.id.button_startQuiz);
         npNumberOfQuestions = findViewById(R.id.npQuestionNumber);
-        npTopic = findViewById(R.id.npQuestionTopic);
-
+        Log.d(LOG_TAG, "start Quiz!");
         //how many questions to answer?
         npNumberOfQuestions.setMinValue(1);
         npNumberOfQuestions.setMaxValue(7);
         npNumberOfQuestions.setWrapSelectorWheel(false);
 
-        //which topic?
-        npTopic.setMinValue(1);
-        npTopic.setMaxValue(3);
-        //TODO: instead of hard coding, get available topic from firebase db
-        String [] topicSelection = {"Sports", "Celebrities", "Geography", "Android" };
-        npTopic.setDisplayedValues(topicSelection);
+        ArrayList<String> topiclist = getTopics();
 
         btnStartQuizButton.setOnClickListener(v -> {
             Log.d(LOG_TAG, "start Quiz!");
 
             //are we connected to M&M dispenser?
-            if(this.bleGattCallback.isConnected()) {
+            //if(this.bleGattCallback.isConnected()) {
                 //yes? start Quiz Intent
-                String topic = topicSelection[npTopic.getValue()-1];
+                int choice = npTopic.getValue();
+                String topic = topiclist.get(choice-1);
                 Bundle extras = new Bundle();
-                extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
+                extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue()-1);
                 extras.putString(QUESTION_TOPIC, topic);
                 Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
 
                 intent.putExtras(extras);
                 startActivity(intent);
-            } else {
+            //} else {
                 //no? ask user to connect first
-                Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
-            }
+               // Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
+            //}
 
         });
     }
 
+    private ArrayList<String> getTopics() {
 
+        ArrayList<String> topics = new ArrayList<String>();
+
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange( DataSnapshot dataSnapshot) {
+                //Getting the string value of that node
+                Iterable<DataSnapshot> children =  dataSnapshot.getChildren();
+                children.forEach(i -> {
+                    topics.add(i.getKey());
+                });
+                //ArrayList<String> topiclist = getTopics();
+                String [] topicSelection = topics.toArray(new String[topics.size()]);
+                //which topic?
+                npTopic.setMinValue(1);
+                npTopic.setMaxValue(topics.size());
+                npTopic.setDisplayedValues(topicSelection);
+            }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage() );
+
+            }
+        });
+        return topics;
+    }
     private void initBleDeviceSelection() {
         spBleScanResult = findViewById(R.id.spBleScanResult);
         adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.support_simple_spinner_dropdown_item);
@@ -204,5 +243,4 @@ public class MainActivity extends AppCompatActivity {
             Log.d(LOG_TAG, "BLE not available");
         }
     }
-
 }
