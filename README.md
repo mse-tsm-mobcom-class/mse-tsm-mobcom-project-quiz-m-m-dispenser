@@ -33,25 +33,36 @@ The Firebase realtime Database is used to store questions acording to different 
 Datastructure:
 ```
 {
-	"topics": {
-		  "geography" : {
-			"questions" : [ null, {
-			  "1" : "Lucerne",
-			  "2" : "Bern",
-			  "3" : "Zurich",
-			  "4" : "Geneva",
-			  "correctAnswer" : 2,
-			  "question" : "What is the capital of lucerne"
-			}, {
-			  "1" : "Jura",
-			  "2" : "Westschweiz",
-			  "3" : "Tessin",
-			  "4" : "Ostschweiz",
-			  "correctAnswer" : 3,
-			  "question" : "What is the southern part called of Switzerland?"
-			} ]
-		  }
-	}
+  "topics" : {
+    "geography" : {
+      "questions" : [ null, {
+        "answer1" : "Lucerne",
+        "answer2" : "Bern",
+        "answer3" : "Zurich",
+        "answer4" : "Geneva",
+        "correctAnswer" : 2,
+        "question" : "What is the capital of lucerne"
+      }, {
+        "answer1" : "Jura",
+        "answer2" : "Westschweiz",
+        "answer3" : "Tessin",
+        "answer4" : "Ostschweiz",
+        "correctAnswer" : 3,
+        "question" : "What is the southern part called of Switzerland?"
+      } ]
+    },
+    "sports" : {
+      "questions" : [ null, {
+        "answer1" : "Switzerland",
+        "answer2" : "Germany",
+        "answer3" : "Argentina",
+        "answer4" : "Brazil",
+        "correctAnswer" : 4,
+        "question" : "Who won the soccer World Cup in 1994?"
+      } ]
+    }
+  }
 }
+
 ```
 
