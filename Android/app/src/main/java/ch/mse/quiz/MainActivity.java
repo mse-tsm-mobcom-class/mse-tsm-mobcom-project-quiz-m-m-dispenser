@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 int choice = npTopic.getValue();
                 String topic = topiclist.get(choice-1);
                 Bundle extras = new Bundle();
-                extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue()-1);
+                extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
                 extras.putString(QUESTION_TOPIC, topic);
 
                 Intent intent = new Intent(MainActivity.this, QuestionActivity.class);

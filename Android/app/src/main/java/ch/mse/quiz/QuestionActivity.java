@@ -77,7 +77,7 @@ public class QuestionActivity extends AppCompatActivity {
         tvTimer = findViewById(R.id.quiz_Timer);
 
         //set initial values
-        currentQuestion = 0;
+        currentQuestion = 1;
         score = 0;
         //how many questions to do? get data from MainActivity calling
         Intent intent = getIntent();
@@ -174,7 +174,7 @@ public class QuestionActivity extends AppCompatActivity {
                 });
                 // if less questions are in the DB then chosen by the user
                 //TODO: discuss UX for this matter and possibly add Toast to inform user
-                if(questionnr < questionNumber) {
+                if(questionnr <= questionNumber) {
                     questionNumber = questionnr;
                 }
                 //set first question UI
@@ -191,8 +191,8 @@ public class QuestionActivity extends AppCompatActivity {
 
     //create new question from list and set UI accordingly
     private void createQuestion(int i) {
-        tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber+1);
-        question q = questions.get(i);
+        tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
+        question q = questions.get(i-1);
         tvQuestion.setText(q.getQuestion());
 
         buttonAnswerA.setText(q.getAnswer1());
@@ -251,7 +251,7 @@ public class QuestionActivity extends AppCompatActivity {
         @Override
         public void run() {
             createQuestion(currentQuestion);
-            tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber+1);
+            tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
             resetButtonColor();
             startTimer();
         }
