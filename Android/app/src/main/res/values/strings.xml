@@ -16,6 +16,29 @@
     <string name="button_beginNewQuiz">begin new quiz</string>
     <string name="title_results">Results</string>
     <string name="editText_main">enter number of questions</string>
+    <!-- Firebase strings -->
+    <string name="btn_authenticate">Authenticate</string>
+    <string name="title_activity_fire_base_basic_auth">FireBaseBasicAuth</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="emailpassword_title_text">Email and Password</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="signed_in">Signed In</string>
+    <string name="signed_out">Signed Out</string>
+    <string name="verify_email">Verify</string>
+    <string name="reload">Reload</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="create_account">Create Account</string>
+    <string name="auth_failed">Authentication failed</string>
+    <!-- Firebase strings end -->
     <string name="ble_search">search candy dispenser</string>
     <string name="ble_search_no_result">no candy dispenser found</string>
     <string name="ble_label_select_device">Select dispenser</string>

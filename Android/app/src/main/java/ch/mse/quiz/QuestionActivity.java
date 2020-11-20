@@ -1,6 +1,5 @@
 package ch.mse.quiz;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +11,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DatabaseReference;
@@ -21,10 +26,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.mse.quiz.models.question;
 import ch.mse.quiz.ble.BleGattCallback;
 import nl.dionsegijn.konfetti.KonfettiView;
 import nl.dionsegijn.konfetti.models.Shape;
 import nl.dionsegijn.konfetti.models.Size;
+
+import static android.content.ContentValues.TAG;
 
 public class QuestionActivity extends AppCompatActivity {
     public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.NUMBER";
@@ -38,9 +46,8 @@ public class QuestionActivity extends AppCompatActivity {
     private String questionTopic;
     private int score;
 
+    public ArrayList<question> questions = new ArrayList<question>();
     private Handler handler = new Handler();
-
-    public List<question> questions;
 
     private TextView tvTimer;
     private TextView tvProgress;
@@ -53,18 +60,36 @@ public class QuestionActivity extends AppCompatActivity {
     private TextView tvDispenserState;
     private KonfettiView konfettiView;
 
+    //firebase
+    //Getting Firebase Instance
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference dbRef;
+
     //BLE
     private final BleGattCallback bleGattCallback = new BleGattCallback();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        tvTimer = findViewById(R.id.quiz_Timer);
         tvProgress = findViewById(R.id.textView_questionProgress);
+        tvTimer = findViewById(R.id.quiz_Timer);
+
+        //set initial values
+        currentQuestion = 1;
+        score = 0;
+        //how many questions to do? get data from MainActivity calling
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        questionNumber = extras.getInt(MainActivity.QUESTION_NUMBER);
+        questionTopic = extras.getString(MainActivity.QUESTION_TOPIC);
+
+        //read required amount of questions from DB
+        getQuestions();
+
         tvDispenserState = findViewById(R.id.textView_dispenserState);
+        //pbTimer = findViewById(R.id.quiz_progressBar);
         konfettiView = findViewById(R.id.viewKonfetti);
         tvQuestion = findViewById(R.id.textView_questionText);
         buttonAnswerA = findViewById(R.id.textView_answerA);
@@ -72,24 +97,11 @@ public class QuestionActivity extends AppCompatActivity {
         buttonAnswerC = findViewById(R.id.textView_answerC);
         buttonAnswerD = findViewById(R.id.textView_answerD);
 
-        //how many questions to do? get data from MainActivity calling
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        questionNumber = extras.getInt(MainActivity.QUESTION_NUMBER);
-        questionTopic = extras.getString(MainActivity.QUESTION_TOPIC);
-        tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
-
-        //read required amount of questions from DB
-        questions = getQuestions();
-        //set initial values
-        currentQuestion = 1;
-        score = 0;
-
         //Button Listeners
         buttonAnswerA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submit(0);
+                submit(1);
                 Log.d(LOG_TAG, "checkAnswerA");
             }
         });
@@ -97,7 +109,7 @@ public class QuestionActivity extends AppCompatActivity {
         buttonAnswerB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submit(1);
+                submit(2);
                 Log.d(LOG_TAG, "checkAnswerB");
             }
         });
@@ -105,7 +117,7 @@ public class QuestionActivity extends AppCompatActivity {
         buttonAnswerC.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submit(2);
+                submit(3);
                 Log.d(LOG_TAG, "checkAnswerC");
             }
         });
@@ -113,7 +125,7 @@ public class QuestionActivity extends AppCompatActivity {
         buttonAnswerD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submit(3);
+                submit(4);
                 Log.d(LOG_TAG, "checkAnswerD");
             }
         });
@@ -122,15 +134,86 @@ public class QuestionActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "on create");
     }
 
+/*
+    //timer
+    private void startCountdownTimer() {
+        int i = 0;
+        pbTimer.setProgress(i);
+        countDownTimer = new CountDownTimer(5000,1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                i++;
+                pbTimer.setProgress((int) i * 100/(5000/1000));
+            }
+
+            @Override
+            public void onFinish() {
+                i++;
+                pbTimer.setProgress(100);
+            }
+        }
+    }
+    */
+    //TODO: read random questions from FirebaseDB
+    private void getQuestions() {
+        dbRef = database.getReference("topics/geography/questions");
+        //dbRef = database.getReference("topics/"+questionTopic+"/questions");
+        ArrayList<question> questionlist = new ArrayList<question>( );
+
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange( DataSnapshot dataSnapshot) {
+                //Getting the string value of that node
+                Log.d("dbtag","ondatachangecalled");
+                //check if amount of question is h
+                int questionnr = (int) dataSnapshot.getChildrenCount();
+
+                Iterable<DataSnapshot> children =  dataSnapshot.getChildren();
+                children.forEach(i -> {
+                    questions.add(i.getValue(question.class));
+                });
+                // if less questions are in the DB then chosen by the user
+                //TODO: discuss UX for this matter and possibly add Toast to inform user
+                if(questionnr <= questionNumber) {
+                    questionNumber = questionnr;
+                }
+                //set first question UI
+                createQuestion(currentQuestion);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage() );
+
+            }
+        });
+    }
+
+    //create new question from list and set UI accordingly
+    private void createQuestion(int i) {
+        tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
+        question q = questions.get(i-1);
+        tvQuestion.setText(q.getQuestion());
+
+        buttonAnswerA.setText(q.getAnswer1());
+        buttonAnswerB.setText(q.getAnswer2());
+        buttonAnswerC.setText(q.getAnswer3());
+        buttonAnswerD.setText(q.getAnswer4());
+
+        correctAnswer = q.getCorrectAnswer();
+
+        Log.d(LOG_TAG, "new question created!");
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+
         Log.d(LOG_TAG, "onStart");
 
         //set first question UI
         tvDispenserState.setText("right answer, get M&M");
         resetButtonColor();
-        createQuestion(currentQuestion-1);
         startTimer();
     }
 
@@ -229,36 +312,6 @@ public class QuestionActivity extends AppCompatActivity {
         }
     }
 
-    //Questions: read from DB
-    //TODO: read random questions from FirebaseDB
-    private List<question> getQuestions() {
-        Log.d(LOG_TAG, "new question list created!");
-
-        List<question> questions = new ArrayList<>();
-
-        String question = "What is the capital of France?";
-        String[] answers = {"Germany", "Switzerland", "France", "USA"};
-        for (int i = 0; i <= questionNumber; i++) {
-            questions.add(new question(question, 2, answers));
-        }
-
-        return questions;
-    }
-
-    //create new question from list and set UI accordingly
-    private void createQuestion(int i) {
-        Log.d(LOG_TAG, "new question created!");
-        question q = questions.get(i);
-        tvQuestion.setText(q.getQuestion());
-
-        buttonAnswerA.setText(q.getAnswer(0));
-        buttonAnswerB.setText(q.getAnswer(1));
-        buttonAnswerC.setText(q.getAnswer(2));
-        buttonAnswerD.setText(q.getAnswer(3));
-
-        correctAnswer = q.getCorrectAnswer();
-    }
-
     //UI changers
     private void resetButtonColor() {
         buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.grey));
@@ -268,41 +321,40 @@ public class QuestionActivity extends AppCompatActivity {
     }
 
     private void setButtonColor() {
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 1; i <= 4; i++) {
             if (i == correctAnswer) {
                 switch (i) {
-                    case 0:
+                    case 1:
                         buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.green));
                         break;
-                    case 1:
+                    case 2:
                         buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.green));
                         break;
-                    case 2:
+                    case 3:
                         buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.green));
                         break;
-                    case 3:
+                    case 4:
                         buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.green));
                         break;
                 }
             } else {
                 switch (i) {
-                    case 0:
+                    case 1:
                         buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.red));
                         break;
-                    case 1:
+                    case 2:
                         buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.red));
                         break;
-                    case 2:
+                    case 3:
                         buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.red));
                         break;
-                    case 3:
+                    case 4:
                         buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.red));
                         break;
                 }
             }
         }
     }
-
     //BLE
     private void  dispenseCandy() {
         bleGattCallback.dispense();

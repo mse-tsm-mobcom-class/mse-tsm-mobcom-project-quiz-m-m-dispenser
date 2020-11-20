@@ -1,11 +1,13 @@
 package ch.mse.quiz;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,12 +19,24 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.quiz.firebase.FirebaseLogin;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
 import ch.mse.quiz.permission.PermissionService;
@@ -44,10 +58,35 @@ public class MainActivity extends AppCompatActivity {
     private Spinner spBleScanResult;
     private ArrayAdapter<String> adapter;
 
+    //Firebase
+    private FirebaseAuth mAuth;
+    static int LAUNCH_SECOND_ACTIVITY = 11;
+    public static final String USER_AUTH = "user_auth";
+    //Getting Firebase Instance
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference dbRef;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        npTopic = findViewById(R.id.npQuestionTopic);
+        // init firebase auth and get user
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        // if user is not logged in then redirect to login page
+        if(currentUser == null) {
+            Intent i = new Intent(this, FirebaseLogin.class);
+            startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
+        } else {
+            Toast.makeText(this, "Loged in as:" + currentUser.getEmail().toString(),
+                    Toast.LENGTH_LONG).show();
+        }
+        //Getting Reference to Root Node
+        dbRef = database.getReference("topics");
+        //firebase init finished
 
         initBleDeviceSelection();
 
@@ -55,12 +94,29 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnDispense = findViewById(R.id.btnDispense);
         btnDispense.setOnClickListener(v -> bleGattCallback.dispense());
-
         initQuiz();
 
         Log.d(LOG_TAG, "-----");
         Log.d(LOG_TAG, "on create");
     }
+
+    //OnActivityResult for LoginScreen
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == LAUNCH_SECOND_ACTIVITY) {
+            if(resultCode == Activity.RESULT_OK){
+                String result=data.getStringExtra("result");
+                Toast.makeText(this, "Loged in as: "+ result.toString(),
+                        Toast.LENGTH_LONG).show();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                Toast.makeText(this, "Authentication failed.",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    }//onActivityResult
 
     private void initPermissions() {
         this.permissionService.checkPermissions(MainActivity.this);
@@ -70,45 +126,66 @@ public class MainActivity extends AppCompatActivity {
     private void initQuiz() {
         btnStartQuizButton = findViewById(R.id.button_startQuiz);
         npNumberOfQuestions = findViewById(R.id.npQuestionNumber);
-        npTopic = findViewById(R.id.npQuestionTopic);
-
+        Log.d(LOG_TAG, "start Quiz!");
         //how many questions to answer?
         npNumberOfQuestions.setMinValue(1);
         npNumberOfQuestions.setMaxValue(7);
         npNumberOfQuestions.setWrapSelectorWheel(false);
 
-        //which topic?
-        npTopic.setMinValue(1);
-        npTopic.setMaxValue(3);
-        //TODO: instead of hard coding, get available topic from firebase db
-        String [] topicSelection = {"Sports", "Celebrities", "Geography", "Android" };
-        npTopic.setDisplayedValues(topicSelection);
+        ArrayList<String> topiclist = getTopics();
 
         btnStartQuizButton.setOnClickListener(v -> {
             Log.d(LOG_TAG, "start Quiz!");
 
             //are we connected to M&M dispenser?
-      //      if(this.bleGattCallback.isConnected()) {
+            //if(this.bleGattCallback.isConnected()) {
                 //yes? start Quiz Intent
-                String topic = topicSelection[npTopic.getValue()-1];
-                int questionsToAnswer = npNumberOfQuestions.getValue();
+                int choice = npTopic.getValue();
+                String topic = topiclist.get(choice-1);
                 Bundle extras = new Bundle();
-                extras.putInt(QUESTION_NUMBER, questionsToAnswer);
+                extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
                 extras.putString(QUESTION_TOPIC, topic);
 
                 Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
                 intent.putExtras(extras);
 
                 startActivity(intent);
-    //        } else {
+            //} else {
                 //no? ask user to connect first
-   //             Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
-   //         }
-
+               // Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
+            //}
         });
     }
 
+    private ArrayList<String> getTopics() {
 
+        ArrayList<String> topics = new ArrayList<String>();
+
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange( DataSnapshot dataSnapshot) {
+                //Getting the string value of that node
+                Iterable<DataSnapshot> children =  dataSnapshot.getChildren();
+                children.forEach(i -> {
+                    topics.add(i.getKey());
+                });
+                //ArrayList<String> topiclist = getTopics();
+                String [] topicSelection = topics.toArray(new String[topics.size()]);
+                //which topic?
+                npTopic.setMinValue(1);
+                npTopic.setMaxValue(topics.size());
+                npTopic.setDisplayedValues(topicSelection);
+            }
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage() );
+
+            }
+        });
+        return topics;
+    }
     private void initBleDeviceSelection() {
         spBleScanResult = findViewById(R.id.spBleScanResult);
         adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.support_simple_spinner_dropdown_item);

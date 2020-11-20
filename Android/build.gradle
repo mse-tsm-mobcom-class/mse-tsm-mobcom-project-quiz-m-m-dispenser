@@ -10,6 +10,8 @@ buildscript {
         //firebase dependency
         classpath 'com.google.gms:google-services:4.3.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        //firebase dependency
+        classpath 'com.google.gms:google-services:4.3.4'
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0"
         classpath "org.jacoco:org.jacoco.core:0.8.5"
 
