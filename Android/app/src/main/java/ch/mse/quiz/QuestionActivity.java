@@ -214,7 +214,6 @@ public class QuestionActivity extends AppCompatActivity {
         //set first question UI
         tvDispenserState.setText("right answer, get M&M");
         resetButtonColor();
-        createQuestion(currentQuestion);
         startTimer();
     }
 
@@ -322,7 +321,7 @@ public class QuestionActivity extends AppCompatActivity {
     }
 
     private void setButtonColor() {
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 1; i <= 4; i++) {
             if (i == correctAnswer) {
                 switch (i) {
                     case 1:
