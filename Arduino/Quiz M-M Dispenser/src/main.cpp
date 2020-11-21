@@ -1,5 +1,10 @@
 #include <Arduino.h>
 #include <bluefruit.h>
+#include "Ultrasonic.h"
+
+// pin D2
+Ultrasonic ultrasonic(9);
+long RangeInCentimeters;
 
 // 113A0001-FD33-441B-9A57-E9F1C29633D3 => service
 // 113A0002-FD33-441B-9A57-E9F1C29633D3 => characteristic
@@ -8,11 +13,13 @@
 uint8_t const mmDispenserSerivceUuid[] = {0xD3, 0x33, 0x96, 0xC2, 0xF1, 0xE9, 0x57, 0x9A, 0x1B, 0x44, 0x33, 0xFD, 0x01, 0x00, 0x3A, 0x11};
 uint8_t const mmDispenserStateCharacteristicUuid[] = {0xD3, 0x33, 0x96, 0xC2, 0xF1, 0xE9, 0x57, 0x9A, 0x1B, 0x44, 0x33, 0xFD, 0x02, 0x00, 0x3A, 0x11};
 uint8_t const mmDispenserDispenseCharacteristicUuid[] = {0xD3, 0x33, 0x96, 0xC2, 0xF1, 0xE9, 0x57, 0x9A, 0x1B, 0x44, 0x33, 0xFD, 0x03, 0x00, 0x3A, 0x11};
+uint8_t const mmDispenserFillingLevelCharacteristicUuid[] = {0xD3, 0x33, 0x96, 0xC2, 0xF1, 0xE9, 0x57, 0x9A, 0x1B, 0x44, 0x33, 0xFD, 0x04, 0x00, 0x3A, 0x11};
 
 BLEService mmDispenserService = BLEService(mmDispenserSerivceUuid);
 
 BLECharacteristic mmDispenserStateCharacteristic = BLECharacteristic(mmDispenserStateCharacteristicUuid);
 BLECharacteristic mmDispenserDispenseCharacteristic = BLECharacteristic(mmDispenserDispenseCharacteristicUuid);
+BLECharacteristic mmDispenserFillingLevelCharacteristic = BLECharacteristic(mmDispenserFillingLevelCharacteristicUuid);
 
 bool dispenserState = false;
 
@@ -38,7 +45,7 @@ void disconnectedCallback(uint16_t connectionHandle, uint8_t reason)
 
 void cccdCallback(uint16_t connectionHandle, BLECharacteristic *characteristic, uint16_t cccdValue)
 {
-  if (characteristic->uuid == mmDispenserStateCharacteristic.uuid)
+  if (characteristic->uuid == mmDispenserStateCharacteristic.uuid || characteristic->uuid == mmDispenserFillingLevelCharacteristic.uuid)
   {
     Serial.print("Dispenser State 'Notify', ");
     if (characteristic->notifyEnabled())
@@ -72,11 +79,24 @@ void setupDispenserService()
   mmDispenserStateCharacteristic.setCccdWriteCallback(cccdCallback); // Optionally capture CCCD updates
   mmDispenserStateCharacteristic.begin();
 
+  mmDispenserFillingLevelCharacteristic.setProperties(CHR_PROPS_READ | CHR_PROPS_NOTIFY);
+  mmDispenserFillingLevelCharacteristic.setPermission(SECMODE_OPEN, SECMODE_NO_ACCESS);
+  mmDispenserFillingLevelCharacteristic.setFixedLen(2);
+  mmDispenserFillingLevelCharacteristic.setCccdWriteCallback(cccdCallback); // Optionally capture CCCD updates
+  mmDispenserFillingLevelCharacteristic.begin();
+
   mmDispenserDispenseCharacteristic.setProperties(CHR_PROPS_READ | CHR_PROPS_WRITE | CHR_PROPS_WRITE_WO_RESP);
   mmDispenserDispenseCharacteristic.setPermission(SECMODE_NO_ACCESS, SECMODE_OPEN);
   mmDispenserDispenseCharacteristic.setFixedLen(1);
   mmDispenserDispenseCharacteristic.setWriteCallback(writeCallback, true);
   mmDispenserDispenseCharacteristic.begin();
+}
+
+void readProximity()
+{
+  RangeInCentimeters = ultrasonic.MeasureInCentimeters(); // two measurements should keep an interval
+  Serial.print(RangeInCentimeters);                       //0~400cm
+  Serial.println(" cm");
 }
 
 void startAdvertising()
@@ -116,20 +136,46 @@ void setup()
   startAdvertising();
 }
 
+void notifyProximity()
+{
+  readProximity();
+  uint8_t fillingLevelHiByte = (uint8_t)(RangeInCentimeters >> 8);
+  uint8_t fillingLevelLoByte = (uint8_t)RangeInCentimeters;
+  uint8_t fillingLevelStateData[2] = {fillingLevelHiByte, fillingLevelLoByte};
+  if (mmDispenserFillingLevelCharacteristic.notify(fillingLevelStateData, sizeof(fillingLevelStateData)))
+  {
+    Serial.print("Notified, filling level = ");
+    Serial.println(RangeInCentimeters);
+  }
+  else
+  {
+    Serial.println("Notify not set, or not connected");
+  }
+}
+
+void notifyDispenserState()
+{
+  int dispenserStateInt = dispenserState ? 1 : 0;
+  uint8_t dispenserStateHiByte = (uint8_t)(dispenserStateInt >> 8);
+  uint8_t dispenserStateLoByte = (uint8_t)dispenserStateInt;
+  uint8_t dispenserStateData[2] = {dispenserStateHiByte, dispenserStateLoByte};
+  if (mmDispenserStateCharacteristic.notify(dispenserStateData, sizeof(dispenserStateData)))
+  {
+    Serial.print("Notified, dispenser state = ");
+    Serial.println(dispenserStateInt);
+  }
+  else
+  {
+    Serial.println("Notify not set, or not connected");
+  }
+}
+
 void loop()
 {
-  if (Bluefruit.connected()) {
-    
-    int dispenserStateInt = dispenserState ? 1 : 0;
-    uint8_t dispenserStateHiByte = (uint8_t) (dispenserStateInt >> 8);
-    uint8_t dispenserStateLoByte = (uint8_t) dispenserStateInt;
-    uint8_t dispenserStateData[2] = { dispenserStateHiByte, dispenserStateLoByte };
-    if (mmDispenserStateCharacteristic.notify(dispenserStateData, sizeof(dispenserStateData))) {
-      Serial.print("Notified, dispenser state = ");
-      Serial.println(dispenserStateInt);
-    } else {
-      Serial.println("Notify not set, or not connected");
-    }
+  if (Bluefruit.connected())
+  {
+    notifyDispenserState();
+    notifyProximity();
   }
   delay(1000); // ms
 }
