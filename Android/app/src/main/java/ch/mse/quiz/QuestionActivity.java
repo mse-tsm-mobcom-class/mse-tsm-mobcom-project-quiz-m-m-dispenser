@@ -156,15 +156,11 @@ public class QuestionActivity extends AppCompatActivity {
     */
     //TODO: read random questions from FirebaseDB
     private void getQuestions() {
-        dbRef = database.getReference("topics/geography/questions");
-        //dbRef = database.getReference("topics/"+questionTopic+"/questions");
-        ArrayList<question> questionlist = new ArrayList<question>( );
+        dbRef = database.getReference("topics/"+ questionTopic + "/questions");
 
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange( DataSnapshot dataSnapshot) {
-                //Getting the string value of that node
-                Log.d("dbtag","ondatachangecalled");
                 //check if amount of question is h
                 int questionnr = (int) dataSnapshot.getChildrenCount();
 

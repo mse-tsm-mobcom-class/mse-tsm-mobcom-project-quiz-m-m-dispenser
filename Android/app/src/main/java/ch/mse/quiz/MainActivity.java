@@ -169,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
                 children.forEach(i -> {
                     topics.add(i.getKey());
                 });
-                //ArrayList<String> topiclist = getTopics();
                 String [] topicSelection = topics.toArray(new String[topics.size()]);
                 //which topic?
                 npTopic.setMinValue(1);
