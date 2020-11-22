@@ -1,6 +1,9 @@
 #include <Arduino.h>
 #include <bluefruit.h>
 #include "Ultrasonic.h"
+#include <Servo.h>
+
+Servo myServo;
 
 // pin D2
 Ultrasonic ultrasonic(9);
@@ -22,6 +25,21 @@ BLECharacteristic mmDispenserDispenseCharacteristic = BLECharacteristic(mmDispen
 BLECharacteristic mmDispenserFillingLevelCharacteristic = BLECharacteristic(mmDispenserFillingLevelCharacteristicUuid);
 
 bool dispenserState = false;
+
+void dispense()
+{
+  if (dispenserState)
+  {
+    // sets speed of servo. From 0 - 90 for clockwise. From 90 - 180 to anticlockwise.
+    //hint: this servo somewhow uses 94 as stopping point
+    myServo.write(96);
+    //servo uses 5.2 sec to do a full turn
+    delay(5200);
+    //stops servo
+    myServo.write(94);
+  }
+  dispenserState = false;
+}
 
 void connectedCallback(uint16_t connectionHandle)
 {
@@ -45,9 +63,21 @@ void disconnectedCallback(uint16_t connectionHandle, uint8_t reason)
 
 void cccdCallback(uint16_t connectionHandle, BLECharacteristic *characteristic, uint16_t cccdValue)
 {
-  if (characteristic->uuid == mmDispenserStateCharacteristic.uuid || characteristic->uuid == mmDispenserFillingLevelCharacteristic.uuid)
+  if (characteristic->uuid == mmDispenserStateCharacteristic.uuid)
   {
     Serial.print("Dispenser State 'Notify', ");
+    if (characteristic->notifyEnabled())
+    {
+      Serial.println("enabled");
+    }
+    else
+    {
+      Serial.println("disabled");
+    }
+  }
+  else if (characteristic->uuid == mmDispenserFillingLevelCharacteristic.uuid)
+  {
+    Serial.print("Filling Level 'Notify', ");
     if (characteristic->notifyEnabled())
     {
       Serial.println("enabled");
@@ -65,6 +95,7 @@ void writeCallback(uint16_t connectionHandle, BLECharacteristic *characteristic,
   {
     Serial.print("Dispense ");
     dispenserState = data[0] != 0x00;
+    dispense();
     Serial.println(dispenserState ? "enabled" : "disabled");
   }
 }
@@ -127,6 +158,8 @@ void setup()
   } // only if usb connected
   Serial.println("Setup");
 
+  myServo.attach(6);
+
   Bluefruit.begin();
   Bluefruit.setName("nRF52840");
   Bluefruit.Periph.setConnectCallback(connectedCallback);
@@ -149,7 +182,7 @@ void notifyProximity()
   }
   else
   {
-    Serial.println("Notify not set, or not connected");
+    Serial.println("Filling Level Notify not set, or not connected");
   }
 }
 
@@ -166,7 +199,7 @@ void notifyDispenserState()
   }
   else
   {
-    Serial.println("Notify not set, or not connected");
+    Serial.println("Dispenser State Notify not set, or not connected");
   }
 }
 
