@@ -130,7 +130,7 @@ public class BleGattCallbackTest extends TestCase {
     public void setFillingLevel() {
         byte[] fillingLevelByte = {0x000F};
         bleGattCallback.setFillingLevel(fillingLevelByte);
-        assertEquals(15L, bleGattCallback.getFillingLevel());
+        assertEquals(15, bleGattCallback.getFillingLevel());
     }
 
     @Test
@@ -138,5 +138,13 @@ public class BleGattCallbackTest extends TestCase {
         byte[] fillingLevelByte = {0x000F};
         String value = bleGattCallback.convertBytesToHex(fillingLevelByte);
         assertEquals("0f", value);
+    }
+
+    @Test
+    public void getFillingLevelPercentage() {
+        byte[] fillingLevelByte = {0x000F};
+        bleGattCallback.setFillingLevel(fillingLevelByte);
+        double fillingLevelPercentage = bleGattCallback.getFillingLevelPercentage();
+        assertTrue(28 < fillingLevelPercentage);
     }
 }

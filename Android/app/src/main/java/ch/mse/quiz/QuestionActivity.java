@@ -213,7 +213,7 @@ public class QuestionActivity extends AppCompatActivity {
             while (!fillingLevelThread.isInterrupted()) {
                 try {
                     Thread.sleep(1000);
-                    runOnUiThread(() -> tvFillingLevel.setText(String.format(Locale.GERMAN, "%s %d", getResources().getString(R.string.tv_filling_level), bleGattCallback.getFillingLevel())));
+                    runOnUiThread(() -> tvFillingLevel.setText(String.format(Locale.GERMAN, "%s %.2f", getResources().getString(R.string.tv_filling_level), bleGattCallback.getFillingLevelPercentage())));
                 } catch (InterruptedException e) {
                     fillingLevelThread.interrupt();
                 }

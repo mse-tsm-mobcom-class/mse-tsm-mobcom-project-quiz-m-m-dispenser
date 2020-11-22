@@ -32,6 +32,8 @@ public class BleGattCallback extends BluetoothGattCallback {
     private boolean isDispenserStateNotificationEnabled = false;
     private boolean isFillingLevelNotificationEnabled = false;
 
+    private final double dispenserHeightCm = 21;
+
     private BleGattCallback() {
     }
 
@@ -135,6 +137,16 @@ public class BleGattCallback extends BluetoothGattCallback {
 
     public int getFillingLevel() {
         return fillingLevel;
+    }
+
+    public double getFillingLevelPercentage() {
+        double fillingLevelPercentage = (1 - (fillingLevel / dispenserHeightCm)) * 100;
+        if (0 > fillingLevelPercentage) {
+            fillingLevelPercentage = 0;
+        } else if (100 < fillingLevelPercentage) {
+            fillingLevelPercentage = 100;
+        }
+        return fillingLevelPercentage;
     }
 
     public boolean isDispenserState() {
