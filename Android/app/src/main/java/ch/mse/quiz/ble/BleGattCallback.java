@@ -13,16 +13,34 @@ import java.util.List;
 import java.util.UUID;
 
 public class BleGattCallback extends BluetoothGattCallback {
+
+    private static BleGattCallback instance = null;
+
     private static final String TAG = BleGattCallback.class.getSimpleName();
     private final UUID mmDispenserStateCharacteristicUuid = UUID.fromString("113A0002-FD33-441B-9A57-E9F1C29633D3");
     private final UUID mmDispenserDispenseCharacteristicUuid = UUID.fromString("113A0003-FD33-441B-9A57-E9F1C29633D3");
+    private final UUID mmDispenserFillingLevelCharacteristicUuid = UUID.fromString("113A0004-FD33-441B-9A57-E9F1C29633D3");
     private final UUID clientCharacteristicConfigurationUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
     private final byte[] dispenseValue = {0x01};
     private BluetoothGattCharacteristic mmDispenserStateCharacteristic = null;
     private BluetoothGattCharacteristic mmDispenserDispenseCharacteristic = null;
+    private BluetoothGattCharacteristic mmDispenserFillingLevelCharacteristic = null;
     private BluetoothGatt gatt;
     private boolean dispenserState = false;
     private boolean isConnected = false;
+    private int fillingLevel = 0;
+    private boolean isDispenserStateNotificationEnabled = false;
+    private boolean isFillingLevelNotificationEnabled = false;
+
+    private BleGattCallback() {
+    }
+
+    public static BleGattCallback getInstance() {
+        if (null == instance) {
+            instance = new BleGattCallback();
+        }
+        return instance;
+    }
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
@@ -48,6 +66,9 @@ public class BleGattCallback extends BluetoothGattCallback {
                         this.enableDispenserStateNotification();
                     } else if (characteristic.getUuid().equals(mmDispenserDispenseCharacteristicUuid)) {
                         mmDispenserDispenseCharacteristic = characteristic;
+                    } else if (characteristic.getUuid().equals(mmDispenserFillingLevelCharacteristicUuid)) {
+                        mmDispenserFillingLevelCharacteristic = characteristic;
+                        this.enableFillingLevelNotification();
                     }
                 }
             }
@@ -71,10 +92,29 @@ public class BleGattCallback extends BluetoothGattCallback {
         }
     }
 
-
     @Override
-    public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-        super.onCharacteristicRead(gatt, characteristic, status);
+    public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
+        super.onDescriptorWrite(gatt, descriptor, status);
+        if (null != mmDispenserStateCharacteristic && descriptor.getCharacteristic().getUuid() == mmDispenserStateCharacteristic.getUuid()) {
+            isDispenserStateNotificationEnabled = true;
+            if (!isFillingLevelNotificationEnabled) {
+                enableFillingLevelNotification();
+            }
+        } else if (null != mmDispenserFillingLevelCharacteristic && descriptor.getCharacteristic().getUuid() == mmDispenserFillingLevelCharacteristic.getUuid()) {
+            isFillingLevelNotificationEnabled = true;
+            if (!isDispenserStateNotificationEnabled) {
+                enableDispenserStateNotification();
+            }
+        }
+    }
+
+    public void enableFillingLevelNotification() {
+        if (null != mmDispenserFillingLevelCharacteristic && null != gatt) {
+            gatt.setCharacteristicNotification(mmDispenserFillingLevelCharacteristic, true);
+            BluetoothGattDescriptor descriptor = mmDispenserFillingLevelCharacteristic.getDescriptor(clientCharacteristicConfigurationUuid);
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            gatt.writeDescriptor(descriptor);
+        }
     }
 
     @Override
@@ -88,7 +128,13 @@ public class BleGattCallback extends BluetoothGattCallback {
         super.onCharacteristicChanged(gatt, characteristic);
         if (characteristic.getUuid().equals(mmDispenserStateCharacteristicUuid)) {
             this.dispenserState = Arrays.equals(characteristic.getValue(), dispenseValue);
+        } else if (characteristic.getUuid().equals(mmDispenserFillingLevelCharacteristicUuid)) {
+            setFillingLevel(characteristic.getValue());
         }
+    }
+
+    public int getFillingLevel() {
+        return fillingLevel;
     }
 
     public boolean isDispenserState() {
@@ -97,5 +143,18 @@ public class BleGattCallback extends BluetoothGattCallback {
 
     public boolean isConnected() {
         return isConnected;
+    }
+
+    public void setFillingLevel(byte[] value) {
+        fillingLevel = Integer.parseInt(convertBytesToHex(value), 16);
+    }
+
+    //Source: https://mkyong.com/java/java-convert-byte-to-int-and-vice-versa/
+    public String convertBytesToHex(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
+        for (byte temp : bytes) {
+            result.append(String.format("%02x", temp));
+        }
+        return result.toString();
     }
 }

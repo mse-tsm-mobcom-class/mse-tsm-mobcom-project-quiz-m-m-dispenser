@@ -7,9 +7,10 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,17 +18,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 
-import ch.mse.quiz.models.question;
 import ch.mse.quiz.ble.BleGattCallback;
+import ch.mse.quiz.models.question;
 import nl.dionsegijn.konfetti.KonfettiView;
 import nl.dionsegijn.konfetti.models.Shape;
 import nl.dionsegijn.konfetti.models.Size;
@@ -47,7 +42,7 @@ public class QuestionActivity extends AppCompatActivity {
     private int score;
 
     public ArrayList<question> questions = new ArrayList<question>();
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
 
     private TextView tvTimer;
     private TextView tvProgress;
@@ -58,15 +53,38 @@ public class QuestionActivity extends AppCompatActivity {
     private TextView buttonAnswerC;
     private TextView buttonAnswerD;
     private TextView tvDispenserState;
+    //BLE
+    private final BleGattCallback bleGattCallback = BleGattCallback.getInstance();
     private KonfettiView konfettiView;
+    private final Runnable showResultActivity = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(LOG_TAG, "display QuizResultActivity!");
+            Bundle extras = new Bundle();
+            extras.putInt(QUESTION_NUMBER, questionNumber);
+            extras.putInt(SCORE, score);
+            Intent intent = new Intent(QuestionActivity.this, QuizResultActivity.class);
+            intent.putExtras(extras);
+            startActivity(intent);
+        }
+    };
 
     //firebase
     //Getting Firebase Instance
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference dbRef;
+    private final Runnable newQuestion = new Runnable() {
+        @Override
+        public void run() {
+            createQuestion(currentQuestion);
+            tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
+            resetButtonColor();
+            startTimer();
+        }
+    };
+    private TextView tvFillingLevel;
+    private Thread fillingLevelThread;
 
-    //BLE
-    private final BleGattCallback bleGattCallback = new BleGattCallback();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +107,9 @@ public class QuestionActivity extends AppCompatActivity {
         getQuestions();
 
         tvDispenserState = findViewById(R.id.textView_dispenserState);
+        tvFillingLevel = findViewById(R.id.tvFillingLevel);
+
+        initFillingLevelThread();
         //pbTimer = findViewById(R.id.quiz_progressBar);
         konfettiView = findViewById(R.id.viewKonfetti);
         tvQuestion = findViewById(R.id.textView_questionText);
@@ -134,26 +155,27 @@ public class QuestionActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "on create");
     }
 
-/*
-    //timer
-    private void startCountdownTimer() {
-        int i = 0;
-        pbTimer.setProgress(i);
-        countDownTimer = new CountDownTimer(5000,1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                i++;
-                pbTimer.setProgress((int) i * 100/(5000/1000));
-            }
+    /*
+        //timer
+        private void startCountdownTimer() {
+            int i = 0;
+            pbTimer.setProgress(i);
+            countDownTimer = new CountDownTimer(5000,1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    i++;
+                    pbTimer.setProgress((int) i * 100/(5000/1000));
+                }
 
-            @Override
-            public void onFinish() {
-                i++;
-                pbTimer.setProgress(100);
+                @Override
+                public void onFinish() {
+                    i++;
+                    pbTimer.setProgress(100);
+                }
             }
         }
-    }
-    */
+
+        */
     //TODO: read random questions from FirebaseDB
     private void getQuestions() {
         dbRef = database.getReference("topics/"+ questionTopic + "/questions");
@@ -164,13 +186,13 @@ public class QuestionActivity extends AppCompatActivity {
                 //check if amount of question is h
                 int questionnr = (int) dataSnapshot.getChildrenCount();
 
-                Iterable<DataSnapshot> children =  dataSnapshot.getChildren();
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
                 children.forEach(i -> {
                     questions.add(i.getValue(question.class));
                 });
                 // if less questions are in the DB then chosen by the user
                 //TODO: discuss UX for this matter and possibly add Toast to inform user
-                if(questionnr <= questionNumber) {
+                if (questionnr <= questionNumber) {
                     questionNumber = questionnr;
                     Toast.makeText(getBaseContext(), "Nr. of question adjusted. Only " + questionnr + " questions available.", Toast.LENGTH_SHORT).show();
                 }
@@ -180,38 +202,23 @@ public class QuestionActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage() );
+                Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage());
 
             }
         });
     }
 
-    //create new question from list and set UI accordingly
-    private void createQuestion(int i) {
-        tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
-        question q = questions.get(i-1);
-        tvQuestion.setText(q.getQuestion());
-
-        buttonAnswerA.setText(q.getAnswer1());
-        buttonAnswerB.setText(q.getAnswer2());
-        buttonAnswerC.setText(q.getAnswer3());
-        buttonAnswerD.setText(q.getAnswer4());
-
-        correctAnswer = q.getCorrectAnswer();
-
-        Log.d(LOG_TAG, "new question created!");
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        Log.d(LOG_TAG, "onStart");
-
-        //set first question UI
-        tvDispenserState.setText("right answer, get M&M");
-        resetButtonColor();
-        startTimer();
+    public void initFillingLevelThread() {
+        fillingLevelThread = new Thread(() -> {
+            while (!fillingLevelThread.isInterrupted()) {
+                try {
+                    Thread.sleep(1000);
+                    runOnUiThread(() -> tvFillingLevel.setText(String.format(Locale.GERMAN, "%s %d", getResources().getString(R.string.tv_filling_level), bleGattCallback.getFillingLevel())));
+                } catch (InterruptedException e) {
+                    fillingLevelThread.interrupt();
+                }
+            }
+        });
     }
 
     @Override
@@ -244,38 +251,44 @@ public class QuestionActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onDestroy");
     }
 
-    private Runnable newQuestion = new Runnable() {
-        @Override
-        public void run() {
-            createQuestion(currentQuestion);
-            tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
-            resetButtonColor();
-            startTimer();
-        }
-    };
+    //create new question from list and set UI accordingly
+    private void createQuestion(int i) {
+        tvProgress.setText("Topic " + questionTopic + " Question " + currentQuestion + " out of " + questionNumber);
+        question q = questions.get(i - 1);
+        tvQuestion.setText(q.getQuestion());
 
-    private Runnable showResultActivity = new Runnable() {
-        @Override
-        public void run() {
-            Log.d(LOG_TAG, "display QuizResultActivity!");
-            Bundle extras = new Bundle();
-            extras.putInt(QUESTION_NUMBER, questionNumber);
-            extras.putInt(SCORE, score);
-            Intent intent = new Intent(QuestionActivity.this, QuizResultActivity.class);
-            intent.putExtras(extras);
-            startActivity(intent);
-        }
-    };
+        buttonAnswerA.setText(q.getAnswer1());
+        buttonAnswerB.setText(q.getAnswer2());
+        buttonAnswerC.setText(q.getAnswer3());
+        buttonAnswerD.setText(q.getAnswer4());
+
+        correctAnswer = q.getCorrectAnswer();
+
+        Log.d(LOG_TAG, "new question created!");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Log.d(LOG_TAG, "onStart");
+
+        //set first question UI
+        tvDispenserState.setText("right answer, get M&M");
+        fillingLevelThread.start();
+        resetButtonColor();
+        startTimer();
+    }
 
     //timer
     private void startTimer() {
         Log.d(LOG_TAG, "Time is running!");
         counter = 30;
 
-        countDownTimer = new CountDownTimer(30000,1000) {
+        countDownTimer = new CountDownTimer(30000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                counter=counter-1;
+                counter = counter - 1;
                 tvTimer.setText(String.valueOf(counter));
             }
 
@@ -301,7 +314,7 @@ public class QuestionActivity extends AppCompatActivity {
         setButtonColor();
 
         //more questions? then create new one
-        if(currentQuestion <= questionNumber) {
+        if (currentQuestion <= questionNumber) {
             handler.postDelayed(newQuestion, 3000);
         } else {
             //otherwise result page
@@ -352,10 +365,11 @@ public class QuestionActivity extends AppCompatActivity {
             }
         }
     }
+
     //BLE
-    private void  dispenseCandy() {
+    private void dispenseCandy() {
         bleGattCallback.dispense();
-        if(bleGattCallback.isDispenserState())
+        if (bleGattCallback.isDispenserState())
             tvDispenserState.setText("grab your m&m");
         else
             tvDispenserState.setText("nothing to take");
@@ -398,7 +412,7 @@ public class QuestionActivity extends AppCompatActivity {
             endTimer();
             handler.postDelayed(newQuestion, 3000);
         } else {
-            handler.postDelayed(showResultActivity,3000);
+            handler.postDelayed(showResultActivity, 3000);
         }
     }
 
