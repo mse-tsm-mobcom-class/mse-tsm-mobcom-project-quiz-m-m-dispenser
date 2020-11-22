@@ -44,4 +44,5 @@
     <string name="ble_label_select_device">Select dispenser</string>
     <string name="selectQuestions">Settings</string>
     <string name="time">Time</string>
+    <string name="tv_filling_level">Filling level: </string>
 </resources>

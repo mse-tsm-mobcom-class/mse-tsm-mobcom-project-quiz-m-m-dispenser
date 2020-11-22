@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +18,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.quiz.firebase.FirebaseLogin;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,15 +29,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import org.jetbrains.annotations.NotNull;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
 import ch.mse.quiz.permission.PermissionService;
@@ -54,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private final PermissionService permissionService = new PermissionService();
     private final HashMap<String, BluetoothDevice> devices = new HashMap<>();
     private static final String SPINNER_DEFAULT_VALUE = "Select dispenser";
-    private final BleGattCallback bleGattCallback = new BleGattCallback();
+    private final BleGattCallback bleGattCallback = BleGattCallback.getInstance();
     private Spinner spBleScanResult;
     private ArrayAdapter<String> adapter;
 
@@ -81,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(this, FirebaseLogin.class);
             startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
         } else {
-            Toast.makeText(this, "Loged in as:" + currentUser.getEmail().toString(),
+            Toast.makeText(this, "Loged in as:" + currentUser.getEmail(),
                     Toast.LENGTH_LONG).show();
         }
         //Getting Reference to Root Node
@@ -108,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == LAUNCH_SECOND_ACTIVITY) {
             if(resultCode == Activity.RESULT_OK){
                 String result=data.getStringExtra("result");
-                Toast.makeText(this, "Loged in as: "+ result.toString(),
+                Toast.makeText(this, "Loged in as: " + result,
                         Toast.LENGTH_LONG).show();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
