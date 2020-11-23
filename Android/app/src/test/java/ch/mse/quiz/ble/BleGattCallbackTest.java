@@ -77,6 +77,8 @@ public class BleGattCallbackTest extends TestCase {
     public void onConnectionStateChange() {
         bleGattCallback.onConnectionStateChange(gatt, 1, BluetoothGatt.STATE_CONNECTED);
         assertTrue("connection state change failed", true);
+        bleGattCallback.onConnectionStateChange(gatt, 1, BluetoothGatt.STATE_DISCONNECTED);
+        assertTrue("disconnection state change failed", true);
     }
 
     @Test

@@ -3,6 +3,7 @@ package ch.mse.quiz;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
@@ -29,7 +30,6 @@ import com.google.firebase.database.ValueEventListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
@@ -45,9 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private NumberPicker npNumberOfQuestions;
     private NumberPicker npTopic;
     private BluetoothDevice device;
+    private BluetoothGatt deviceGatt;
     private static final int REQUEST_ENABLE_BT = 1;
     private final PermissionService permissionService = new PermissionService();
-    private final HashMap<String, BluetoothDevice> devices = new HashMap<>();
     private final BleGattCallback bleGattCallback = BleGattCallback.getInstance();
 
     //Firebase
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                             device = result.getDevice();
                             if (null != device) {
                                 Log.i(LOG_TAG, device.getAddress());
-                                device.connectGatt(MainActivity.this, false, bleGattCallback,
+                                deviceGatt = device.connectGatt(MainActivity.this, false, bleGattCallback,
                                         BluetoothDevice.TRANSPORT_AUTO);
                                 Toast.makeText(MainActivity.this, R.string.ble_connected, Toast.LENGTH_LONG).show();
                             }
@@ -217,5 +217,19 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d(LOG_TAG, "BLE not available");
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (null != deviceGatt) {
+            deviceGatt.disconnect();
+        }
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        startBleScanner();
     }
 }
