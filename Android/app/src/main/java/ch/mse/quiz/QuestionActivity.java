@@ -324,10 +324,10 @@ public class QuestionActivity extends AppCompatActivity {
 
     //UI changers
     private void resetButtonColor() {
-        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.grey));
-        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.grey));
-        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.grey));
-        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.grey));
+        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.light_blue));
+        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.light_blue));
+        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.light_blue));
+        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.light_blue));
     }
 
     private void setButtonColor() {

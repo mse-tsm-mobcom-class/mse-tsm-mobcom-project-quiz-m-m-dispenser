@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(LOG_TAG, "start Quiz!");
 
             //are we connected to M&M dispenser?
-            //if(this.bleGattCallback.isConnected()) {
+            if(this.bleGattCallback.isConnected()) {
                 //yes? start Quiz Intent
                 int choice = npTopic.getValue();
                 String topic = topiclist.get(choice-1);
@@ -147,10 +147,10 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtras(extras);
 
                 startActivity(intent);
-            //} else {
+            } else {
                 //no? ask user to connect first
-               // Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
-            //}
+                Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
