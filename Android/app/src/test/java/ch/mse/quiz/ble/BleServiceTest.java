@@ -2,8 +2,8 @@ package ch.mse.quiz.ble;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
-import android.widget.ArrayAdapter;
 
 import junit.framework.TestCase;
 
@@ -17,8 +17,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RobolectricTestRunner;
 
-import java.util.HashMap;
-
 @RunWith(RobolectricTestRunner.class)
 public class BleServiceTest extends TestCase {
 
@@ -28,8 +26,6 @@ public class BleServiceTest extends TestCase {
     private BluetoothLeScanner scanner;
     @Mock
     private BluetoothDevice device;
-    @Mock
-    private ArrayAdapter<String> adapter;
 
     @Override
     @Before
@@ -40,25 +36,19 @@ public class BleServiceTest extends TestCase {
 
     @Test
     public void testInitBleScanner() {
-        HashMap<String, BluetoothDevice> devices = new HashMap<>();
-        BleService bleService = new BleService(scanner, devices, adapter);
+        BleService bleService = new BleService(scanner);
         assertNotNull("Ble Service not initialized", bleService);
     }
 
     @Test
     public void testScan() {
-        HashMap<String, BluetoothDevice> devices = new HashMap<>();
-        BleService bleService = new BleService(scanner, devices, adapter);
-        bleService.scan();
+        BleService bleService = new BleService(scanner);
+        bleService.scan(new ScanCallback() {
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                super.onScanResult(callbackType, result);
+            }
+        });
         assertTrue("scan not worked", true);
-    }
-
-    @Test
-    public void testAddDeviceToList() {
-        HashMap<String, BluetoothDevice> devices = new HashMap<>();
-        BleService bleService = new BleService(scanner, devices, adapter);
-        ScanResult result = new ScanResult(device, 0, 0, 0, 0, 0, 0, 0, null, 0);
-        bleService.addDeviceToList(result);
-        assertTrue("device not found", 0 < devices.size());
     }
 }

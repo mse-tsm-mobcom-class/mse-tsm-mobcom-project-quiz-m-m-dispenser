@@ -1,12 +1,18 @@
 #include <Arduino.h>
 #include <bluefruit.h>
-#include "Ultrasonic.h"
+#include <Ultrasonic.h>
 #include <Servo.h>
+
+// pins
+
+int PIN_SONIC = 9;
+int PIN_LED = 4;
+int PIN_SERVO = 6;
 
 Servo myServo;
 
 // pin D2
-Ultrasonic ultrasonic(9);
+Ultrasonic ultrasonic(PIN_SERVO);
 long RangeInCentimeters;
 
 // 113A0001-FD33-441B-9A57-E9F1C29633D3 => service
@@ -50,6 +56,7 @@ void connectedCallback(uint16_t connectionHandle)
   Serial.print(", connected to ");
   Serial.print(centralName);
   Serial.println();
+  digitalWrite(PIN_LED, HIGH);
 }
 
 void disconnectedCallback(uint16_t connectionHandle, uint8_t reason)
@@ -59,6 +66,7 @@ void disconnectedCallback(uint16_t connectionHandle, uint8_t reason)
   Serial.println(reason); // see https://github.com/adafruit/Adafruit_nRF52_Arduino
   // /blob/master/cores/nRF5/nordic/softdevice/s140_nrf52_6.1.1_API/include/ble_hci.h
   Serial.println("Advertising ...");
+  digitalWrite(PIN_LED, LOW);
 }
 
 void cccdCallback(uint16_t connectionHandle, BLECharacteristic *characteristic, uint16_t cccdValue)
@@ -147,6 +155,7 @@ void startAdvertising()
   // 0 = continue advertising after fast mode, until connected
   Bluefruit.Advertising.start(0);
   Serial.println("Advertising ...");
+  digitalWrite(PIN_LED, LOW);
 }
 
 void setup()
@@ -158,10 +167,10 @@ void setup()
   } // only if usb connected
   Serial.println("Setup");
 
-  myServo.attach(6);
+  myServo.attach(PIN_SERVO);
 
   Bluefruit.begin();
-  Bluefruit.setName("nRF52840");
+  Bluefruit.setName("MSE M&M Dispenser");
   Bluefruit.Periph.setConnectCallback(connectedCallback);
   Bluefruit.Periph.setDisconnectCallback(disconnectedCallback);
 

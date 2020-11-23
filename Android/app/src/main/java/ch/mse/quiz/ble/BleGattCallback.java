@@ -51,6 +51,8 @@ public class BleGattCallback extends BluetoothGattCallback {
             Log.i(TAG, "Connected to GATT server.");
             gatt.discoverServices();
             this.isConnected = true;
+        } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+            this.isConnected = false;
         }
     }
 
