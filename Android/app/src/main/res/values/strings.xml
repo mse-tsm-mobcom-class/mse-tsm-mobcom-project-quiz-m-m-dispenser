@@ -11,10 +11,10 @@
     <string name="question_ProgressTest">Question 1/10</string>
     <string name="button_back">back</string>
     <string name="title_question">Question</string>
-    <string name="dispenserState">dispenserState</string>
+    <string name="dispenserState">nothing to take</string>
     <string name="quiz_result">quiz result</string>
     <string name="button_beginNewQuiz">begin new quiz</string>
-    <string name="title_results">Results</string>
+    <string name="title_results">results</string>
     <string name="editText_main">enter number of questions</string>
     <!-- Firebase strings -->
     <string name="btn_authenticate">Authenticate</string>
@@ -46,4 +46,5 @@
     <string name="time">Time</string>
     <string name="tv_filling_level">Filling level: </string>
     <string name="ble_connected">Successful connected to dispenser</string>
+    <string name="tv_leaderboard">Leaderboard Top 5</string>
 </resources>

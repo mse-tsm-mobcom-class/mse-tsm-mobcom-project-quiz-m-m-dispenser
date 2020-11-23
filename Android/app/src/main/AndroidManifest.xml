@@ -12,7 +12,8 @@
         <activity
             android:name=".QuizResultActivity"
             android:label="@string/title_results"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ch.mse.quiz.MainActivity" />
@@ -20,7 +21,8 @@
         <activity
             android:name=".QuestionActivity"
             android:label="@string/title_question"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ch.mse.quiz.MainActivity" />
@@ -37,6 +39,7 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
