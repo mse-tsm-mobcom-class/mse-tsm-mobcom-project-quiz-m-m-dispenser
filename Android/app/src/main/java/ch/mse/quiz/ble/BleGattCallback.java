@@ -32,7 +32,7 @@ public class BleGattCallback extends BluetoothGattCallback {
     private boolean isDispenserStateNotificationEnabled = false;
     private boolean isFillingLevelNotificationEnabled = false;
 
-    private final double dispenserHeightCm = 21;
+    private final double dispenserHeightCm = 210;
 
     private BleGattCallback() {
     }

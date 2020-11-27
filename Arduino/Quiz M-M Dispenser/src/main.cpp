@@ -2,6 +2,7 @@
 #include <bluefruit.h>
 #include <Ultrasonic.h>
 #include <Servo.h>
+#include <Adafruit_VL53L0X.h>
 
 // pins
 
@@ -12,8 +13,10 @@ int PIN_SERVO = 6;
 Servo myServo;
 
 // pin D2
-Ultrasonic ultrasonic(PIN_SERVO);
-long RangeInCentimeters;
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+long rangeInMilimeter;
+long rangeInMilimeterSum = 0;
+int measureCount = 0;
 
 // 113A0001-FD33-441B-9A57-E9F1C29633D3 => service
 // 113A0002-FD33-441B-9A57-E9F1C29633D3 => characteristic
@@ -133,9 +136,28 @@ void setupDispenserService()
 
 void readProximity()
 {
-  RangeInCentimeters = ultrasonic.MeasureInCentimeters(); // two measurements should keep an interval
-  Serial.print(RangeInCentimeters);                       //0~400cm
-  Serial.println(" cm");
+  VL53L0X_RangingMeasurementData_t measure;
+
+  Serial.print("Reading a measurement... ");
+  lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+
+  if (measure.RangeStatus != 4)
+  { // phase failures have incorrect data
+    rangeInMilimeterSum += measure.RangeMilliMeter;
+    measureCount++;
+    if (5 == measureCount)
+    {
+      rangeInMilimeter = rangeInMilimeterSum / measureCount;
+      rangeInMilimeterSum = 0;
+      measureCount = 0;
+    }
+    Serial.print("Distance (mm): ");
+    Serial.println(rangeInMilimeter);
+  }
+  else
+  {
+    Serial.println(" out of range ");
+  }
 }
 
 void startAdvertising()
@@ -158,6 +180,14 @@ void startAdvertising()
   digitalWrite(PIN_LED, LOW);
 }
 
+void setupVL53L0X()
+{
+  if (!lox.begin())
+  {
+    Serial.println(F("Failed to boot VL53L0X"));
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -166,6 +196,8 @@ void setup()
     delay(10);
   } // only if usb connected
   Serial.println("Setup");
+
+  setupVL53L0X();
 
   myServo.attach(PIN_SERVO);
 
@@ -181,13 +213,13 @@ void setup()
 void notifyProximity()
 {
   readProximity();
-  uint8_t fillingLevelHiByte = (uint8_t)(RangeInCentimeters >> 8);
-  uint8_t fillingLevelLoByte = (uint8_t)RangeInCentimeters;
+  uint8_t fillingLevelHiByte = (uint8_t)(rangeInMilimeter >> 8);
+  uint8_t fillingLevelLoByte = (uint8_t)rangeInMilimeter;
   uint8_t fillingLevelStateData[2] = {fillingLevelHiByte, fillingLevelLoByte};
   if (mmDispenserFillingLevelCharacteristic.notify(fillingLevelStateData, sizeof(fillingLevelStateData)))
   {
     Serial.print("Notified, filling level = ");
-    Serial.println(RangeInCentimeters);
+    Serial.println(rangeInMilimeter);
   }
   else
   {
