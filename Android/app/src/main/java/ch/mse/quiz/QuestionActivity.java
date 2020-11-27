@@ -88,6 +88,7 @@ public class QuestionActivity extends AppCompatActivity {
     };
     private TextView tvFillingLevel;
     private Thread fillingLevelThread;
+    private Thread dispenseStatusThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +121,7 @@ public class QuestionActivity extends AppCompatActivity {
 
         //filling level from sensor
         initFillingLevelThread();
+        dispenseCandy();
 
         //Button Listeners
         buttonAnswerA.setOnClickListener(new View.OnClickListener() {
@@ -195,8 +197,9 @@ public class QuestionActivity extends AppCompatActivity {
         super.onStart();
         Log.d(LOG_TAG, "onStart");
         //set first question UI
-        tvDispenserState.setText("right answer, get M&M");
+        tvDispenserState.setText("");
         fillingLevelThread.start();
+        dispenseStatusThread.start();
         resetButtonColor();
         startTimer();
     }
@@ -234,11 +237,24 @@ public class QuestionActivity extends AppCompatActivity {
 
     //BLE
     private void dispenseCandy() {
-        bleGattCallback.dispense();
-        if (bleGattCallback.isDispenserState())
-            tvDispenserState.setText("grab your m&m");
-        else
-            tvDispenserState.setText("nothing to take");
+        dispenseStatusThread = new Thread(() -> {
+           while (!dispenseStatusThread.isInterrupted()) {
+               try {
+                   Thread.sleep(100);
+                   runOnUiThread(() ->  {
+                       String dispenseStatus = "";
+                       if (bleGattCallback.isDispenserState()) {
+                           dispenseStatus = "grab your m&m";
+                       } else {
+                           dispenseStatus = "nothing to take";
+                       }
+                       tvDispenserState.setText(dispenseStatus);
+                   });
+               } catch (InterruptedException e) {
+                   dispenseStatusThread.interrupt();
+               }
+           }
+        });
     }
 
     public void initFillingLevelThread() {
@@ -378,7 +394,7 @@ public class QuestionActivity extends AppCompatActivity {
                     .streamFor(300, 3000L);
 
             //activate M&M dispenser via BLE
-            dispenseCandy();
+            bleGattCallback.dispense();
 
         } else {
             Toast.makeText(getBaseContext(), "Better luck next time!", Toast.LENGTH_SHORT).show();

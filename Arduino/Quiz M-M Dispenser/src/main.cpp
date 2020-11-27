@@ -40,11 +40,13 @@ void dispense()
   {
     // sets speed of servo. From 0 - 90 for clockwise. From 90 - 180 to anticlockwise.
     //hint: this servo somewhow uses 94 as stopping point
-    myServo.write(96);
+    myServo.writeMicroseconds(1520);
     //servo uses 5.2 sec to do a full turn
-    delay(5200);
+    // delay(1800);
     //stops servo
-    myServo.write(94);
+    // myServo.writeMicroseconds(1525);
+    delay(5000);
+    myServo.writeMicroseconds(1501);
   }
   dispenserState = false;
 }
@@ -146,7 +148,7 @@ void readProximity()
     measureCount++;
     if (5 == measureCount)
     {
-      rangeInMilimeter = rangeInMilimeterSum / measureCount;
+      rangeInMilimeter = rangeInMilimeterSum / (measureCount + 1);
       rangeInMilimeterSum = 0;
       measureCount = 0;
     }
@@ -250,5 +252,5 @@ void loop()
     notifyDispenserState();
     notifyProximity();
   }
-  delay(1000); // ms
+  delay(200); // ms
 }
