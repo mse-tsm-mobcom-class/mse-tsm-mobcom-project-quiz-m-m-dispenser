@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <bluefruit.h>
-#include <Ultrasonic.h>
 #include <Servo.h>
 #include <Adafruit_VL53L0X.h>
 
