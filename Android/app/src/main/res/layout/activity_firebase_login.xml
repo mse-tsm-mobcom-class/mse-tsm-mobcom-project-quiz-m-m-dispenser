@@ -19,18 +19,6 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/title_bottom_margin"
             android:text="@string/emailpassword_title_text" />
-
-        <EditText
-            android:id="@+id/status"
-            android:layout_width="200dp"
-            android:layout_height="60dp"
-            android:text="@string/signed_out" />
-
-        <EditText
-            android:id="@+id/detail"
-            android:layout_width="200dp"
-            android:layout_height="70dp"
-            tools:text="Firebase User ID: 123456789abc" />
     </LinearLayout>
 
     <RelativeLayout
