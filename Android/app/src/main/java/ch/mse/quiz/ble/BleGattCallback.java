@@ -21,7 +21,8 @@ public class BleGattCallback extends BluetoothGattCallback {
     private final UUID mmDispenserDispenseCharacteristicUuid = UUID.fromString("113A0003-FD33-441B-9A57-E9F1C29633D3");
     private final UUID mmDispenserFillingLevelCharacteristicUuid = UUID.fromString("113A0004-FD33-441B-9A57-E9F1C29633D3");
     private final UUID clientCharacteristicConfigurationUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private final byte[] dispenseValue = {0x01};
+    private final byte[] dispenseValueSend = {0x01};
+    private final byte[] dispenseValue = {0x00, 0x01};
     private BluetoothGattCharacteristic mmDispenserStateCharacteristic = null;
     private BluetoothGattCharacteristic mmDispenserDispenseCharacteristic = null;
     private BluetoothGattCharacteristic mmDispenserFillingLevelCharacteristic = null;
@@ -33,6 +34,8 @@ public class BleGattCallback extends BluetoothGattCallback {
     private boolean isFillingLevelNotificationEnabled = false;
 
     private final double dispenserHeightCm = 210;
+    private boolean isLow = false;
+    private boolean isTheft = false;
 
     private BleGattCallback() {
     }
@@ -81,7 +84,7 @@ public class BleGattCallback extends BluetoothGattCallback {
 
     public void dispense() {
         if (null != mmDispenserDispenseCharacteristic && null != gatt) {
-            mmDispenserDispenseCharacteristic.setValue(dispenseValue);
+            mmDispenserDispenseCharacteristic.setValue(dispenseValueSend);
             mmDispenserDispenseCharacteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT);
             gatt.writeCharacteristic(mmDispenserDispenseCharacteristic);
         }
@@ -148,7 +151,13 @@ public class BleGattCallback extends BluetoothGattCallback {
         } else if (100 < fillingLevelPercentage) {
             fillingLevelPercentage = 100;
         }
+        checkTheft(fillingLevelPercentage);
+        isLow = 20 >= fillingLevelPercentage;
         return fillingLevelPercentage;
+    }
+
+    private void checkTheft(double currentPercentage) {
+        isTheft = 0 == currentPercentage && !isLow;
     }
 
     public boolean isDispenserState() {
@@ -161,6 +170,10 @@ public class BleGattCallback extends BluetoothGattCallback {
 
     public void setFillingLevel(byte[] value) {
         fillingLevel = Integer.parseInt(convertBytesToHex(value), 16);
+    }
+
+    public boolean isTheft() {
+        return isTheft;
     }
 
     //Source: https://mkyong.com/java/java-convert-byte-to-int-and-vice-versa/

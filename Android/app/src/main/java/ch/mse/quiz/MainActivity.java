@@ -10,10 +10,12 @@ import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference dbRef;
 
+    private Thread theftThread;
+    private boolean theftNotificationShown = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnDispense = findViewById(R.id.btnDispense);
         btnDispense.setOnClickListener(v -> bleGattCallback.dispense());
         initQuiz();
+        checkTheft();
 
         Log.d(LOG_TAG, "-----");
         Log.d(LOG_TAG, "on create");
@@ -144,6 +150,30 @@ public class MainActivity extends AppCompatActivity {
             //no? ask user to connect first
             // Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
             //}
+        });
+    }
+
+    private void checkTheft() {
+        theftThread = new Thread(() -> {
+            while (!theftThread.isInterrupted()) {
+                try {
+                    Thread.sleep(100);
+                    runOnUiThread(() ->  {
+                        if (bleGattCallback.isTheft() && !theftNotificationShown) {
+                            Toast toast = Toast.makeText(getApplicationContext(),  getResources().getText(R.string.current_theft),
+                                    Toast.LENGTH_LONG);
+                            TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
+                            toastMessage.setTextColor(Color.RED);
+                            toast.show();
+                            theftNotificationShown = true;
+                        } else {
+                            theftNotificationShown = false;
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    theftThread.interrupt();
+                }
+            }
         });
     }
 
