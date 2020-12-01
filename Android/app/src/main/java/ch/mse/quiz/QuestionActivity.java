@@ -35,6 +35,7 @@ public class QuestionActivity extends AppCompatActivity {
     public static final String QUIZ_TOPIC = "ch.mse.quiz.extra.QUIZ_TOPIC";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private CountDownTimer countDownTimer;
+    private long remainingTime;
     public int counter;
     private int correctAnswer;
     private int currentQuestion;
@@ -68,7 +69,7 @@ public class QuestionActivity extends AppCompatActivity {
             createQuestion(currentQuestion);
             tvProgress.setText("Topic " + quizTopic + " Question " + currentQuestion + " out of " + questionNumber);
             resetButtonColor();
-            startTimer();
+            startTimer(30000);
         }
     };
 
@@ -110,6 +111,8 @@ public class QuestionActivity extends AppCompatActivity {
         //set initial values
         currentQuestion = 1;
         userScore = 0;
+        remainingTime=30000;
+
         //how many questions to do? get data from MainActivity calling
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -198,24 +201,36 @@ public class QuestionActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onStart");
         //set first question UI
         tvDispenserState.setText("");
-        fillingLevelThread.start();
-        dispenseStatusThread.start();
+        if(!fillingLevelThread.isAlive()) {
+            fillingLevelThread.start();
+        }
+        if(!dispenseStatusThread.isAlive()) {
+            dispenseStatusThread.start();
+        }
         resetButtonColor();
-        startTimer();
+        startTimer(remainingTime);
     }
 
-    //TODO lifecylce managmenet timer
     @Override
     protected void onPause() {
         super.onPause();
         Log.d(LOG_TAG, "onPause");
+        //stopTimer
+        countDownTimer.cancel();
+        countDownTimer = null;
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(LOG_TAG, "onResume");
+        //restart Timer
+        if(countDownTimer == null) {
+            startTimer(remainingTime);
+         }
     }
+
 
     @Override
     protected void onRestart() {
@@ -265,7 +280,7 @@ public class QuestionActivity extends AppCompatActivity {
                     runOnUiThread(() -> tvFillingLevel.setText(String.format(Locale.GERMAN, "%s %d%%", getResources().getString(R.string.tv_filling_level), Math.round(bleGattCallback.getFillingLevelPercentage()))));
                 } catch (InterruptedException e) {
                     fillingLevelThread.interrupt();
-                }
+                } Log.d(LOG_TAG, "onResume");
             }
         });
     }
@@ -286,15 +301,14 @@ public class QuestionActivity extends AppCompatActivity {
     }
 
     //timer
-    private void startTimer() {
+    private void startTimer(long runtime) {
         Log.d(LOG_TAG, "Time is running!");
-        counter = 30;
 
-        countDownTimer = new CountDownTimer(30000, 1000) {
+        countDownTimer = new CountDownTimer(runtime, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                counter = counter - 1;
-                tvTimer.setText(String.valueOf(counter));
+                tvTimer.setText(String.valueOf(millisUntilFinished / 1000L));
+                remainingTime = millisUntilFinished;
             }
 
             @Override
@@ -329,10 +343,10 @@ public class QuestionActivity extends AppCompatActivity {
 
     //UI changers
     private void resetButtonColor() {
-        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.light_blue));
-        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.light_blue));
-        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.light_blue));
-        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.light_blue));
+        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.secondaryColor));
+        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.secondaryColor));
+        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.secondaryColor));
+        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.secondaryColor));
     }
 
     private void setButtonColor() {

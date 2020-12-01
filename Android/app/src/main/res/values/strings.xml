@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Quiz</string>
-    <string name="quiz_image_description">Quiz Imae</string>
+    <string name="quiz_image_description">Quiz Image</string>
     <string name="start_quiz">Start Quiz</string>
     <string name="QuizActivity">Quiz</string>
     <string name="answer_d">answer d</string>
@@ -14,7 +14,7 @@
     <string name="dispenserState">nothing to take</string>
     <string name="quiz_result">quiz result</string>
     <string name="button_beginNewQuiz">begin new quiz</string>
-    <string name="title_results">results</string>
+    <string name="title_results">Results</string>
     <string name="editText_main">enter number of questions</string>
     <!-- Firebase strings -->
     <string name="btn_authenticate">Authenticate</string>
@@ -47,4 +47,5 @@
     <string name="tv_filling_level">Filling level: </string>
     <string name="ble_connected">Successful connected to dispenser</string>
     <string name="tv_leaderboard">Leaderboard Top 5</string>
+    <string name="leaderboard">Leaderboard</string>
 </resources>

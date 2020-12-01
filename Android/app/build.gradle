@@ -72,6 +72,13 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'org.robolectric:robolectric:4.4'
+
+
     implementation "androidx.core:core-ktx:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     /**** FIREBASE DEPENDECIES ****/
@@ -93,6 +100,9 @@ dependencies {
     testImplementation "androidx.test.espresso:espresso-intents:3.3.0"
     testImplementation 'org.mockito:mockito-core:1.10.19'
     testImplementation 'org.robolectric:robolectric:4.4'
+
+    //Material Design
+    api 'com.google.android.material:material:1.1.0-alpha06'
 }
 repositories {
     mavenCentral()
