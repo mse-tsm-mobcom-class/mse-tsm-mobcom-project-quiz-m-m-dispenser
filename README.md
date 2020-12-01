@@ -1,7 +1,7 @@
 # MSE TSM MobCom Project Quiz giving M&M as reward
 
 ## Agile Board
-* https://trello.com/b/6AdpjjWI/mm
+* [Project Board](https://github.com/mse-tsm-mobcom-class/mse-tsm-mobcom-project-quiz-m-m-dispenser/projects)
 
 ## Team
 * [Nikolai Strässle](https://github.com/nikolaistraessle)
@@ -10,7 +10,7 @@
 
 ## Docs
 * [Slides](Docs/Slides.pdf) (PDF)
-* [Video](Docs/Video.mp4) (MP4)
+* [Video](Docs/MnMDispenserDemo.mov) (MOV)
 
 ## Code
 * [Android](Android)
