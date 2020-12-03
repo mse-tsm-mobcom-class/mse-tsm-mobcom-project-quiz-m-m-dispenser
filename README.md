@@ -66,3 +66,6 @@ Datastructure:
 
 ```
 
+#### Firease Testing 
+Testing of the firebase is done with the @firebase/rules-unit-testing library and locally installed emulators. To install the emulator first install the [firebase cli](https://firebase.google.com/docs/cli#install_the_firebase_cli). It is necessary to login into the gmail account and connect your project to it. Furthermore, to run the test on a physical device you have to be in the same wifi with both devices(lapto & Mobile phone). Then add in the local ip of you laptop
+
