@@ -1,5 +1,9 @@
-package ch.mse.quiz.models;
+// Copyright (c) 2020, Steiner Pascal, Strässle Nikolai, Radinger Martin
+// All rights reserved.
 
+// Licensed under LICENSE, see LICENSE file
+
+package ch.mse.quiz.models;
 
 public class userScore {
     private String userName;

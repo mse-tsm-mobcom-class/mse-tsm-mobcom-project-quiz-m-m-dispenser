@@ -1,3 +1,8 @@
+// Copyright (c) 2020, Steiner Pascal, Strässle Nikolai, Radinger Martin
+// All rights reserved.
+
+// Licensed under LICENSE, see LICENSE file
+
 package ch.mse.quiz;
 
 import android.content.Intent;
@@ -111,7 +116,7 @@ public class QuestionActivity extends AppCompatActivity {
         //set initial values
         currentQuestion = 1;
         userScore = 0;
-        remainingTime=30000;
+        remainingTime = 30000;
 
         //how many questions to do? get data from MainActivity calling
         Intent intent = getIntent();
@@ -201,10 +206,10 @@ public class QuestionActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onStart");
         //set first question UI
         tvDispenserState.setText("");
-        if(!fillingLevelThread.isAlive()) {
+        if (!fillingLevelThread.isAlive()) {
             fillingLevelThread.start();
         }
-        if(!dispenseStatusThread.isAlive()) {
+        if (!dispenseStatusThread.isAlive()) {
             dispenseStatusThread.start();
         }
         resetButtonColor();
@@ -226,9 +231,9 @@ public class QuestionActivity extends AppCompatActivity {
         super.onResume();
         Log.d(LOG_TAG, "onResume");
         //restart Timer
-        if(countDownTimer == null) {
+        if (countDownTimer == null) {
             startTimer(remainingTime);
-         }
+        }
     }
 
 
@@ -253,22 +258,22 @@ public class QuestionActivity extends AppCompatActivity {
     //BLE
     private void dispenseCandy() {
         dispenseStatusThread = new Thread(() -> {
-           while (!dispenseStatusThread.isInterrupted()) {
-               try {
-                   Thread.sleep(100);
-                   runOnUiThread(() ->  {
-                       String dispenseStatus = "";
-                       if (bleGattCallback.isDispenserState()) {
-                           dispenseStatus = "grab your m&m";
-                       } else {
-                           dispenseStatus = "nothing to take";
-                       }
-                       tvDispenserState.setText(dispenseStatus);
-                   });
-               } catch (InterruptedException e) {
-                   dispenseStatusThread.interrupt();
-               }
-           }
+            while (!dispenseStatusThread.isInterrupted()) {
+                try {
+                    Thread.sleep(100);
+                    runOnUiThread(() -> {
+                        String dispenseStatus = "";
+                        if (bleGattCallback.isDispenserState()) {
+                            dispenseStatus = "grab your m&m";
+                        } else {
+                            dispenseStatus = "nothing to take";
+                        }
+                        tvDispenserState.setText(dispenseStatus);
+                    });
+                } catch (InterruptedException e) {
+                    dispenseStatusThread.interrupt();
+                }
+            }
         });
     }
 
@@ -280,7 +285,8 @@ public class QuestionActivity extends AppCompatActivity {
                     runOnUiThread(() -> tvFillingLevel.setText(String.format(Locale.GERMAN, "%s %d%%", getResources().getString(R.string.tv_filling_level), Math.round(bleGattCallback.getFillingLevelPercentage()))));
                 } catch (InterruptedException e) {
                     fillingLevelThread.interrupt();
-                } Log.d(LOG_TAG, "onResume");
+                }
+                Log.d(LOG_TAG, "onResume");
             }
         });
     }

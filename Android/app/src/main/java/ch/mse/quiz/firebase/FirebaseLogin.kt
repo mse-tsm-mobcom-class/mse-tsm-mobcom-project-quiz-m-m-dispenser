@@ -1,10 +1,17 @@
+// Copyright (c) 2020, Steiner Pascal, Strässle Nikolai, Radinger Martin
+// All rights reserved.
+
+// Licensed under LICENSE, see LICENSE file
+
 package com.example.quiz.firebase
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.text.method.PasswordTransformationMethod
 import android.util.Log
+import android.util.Patterns
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -12,8 +19,10 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ch.mse.quiz.R
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import org.w3c.dom.Text
 
 
 class FirebaseLogin : AppCompatActivity() {
@@ -33,22 +42,36 @@ class FirebaseLogin : AppCompatActivity() {
     private fun validateForm(): Boolean {
         var valid = true
 
-        val email = findViewById<EditText>(R.id.fieldEmail).toString()
-        if (TextUtils.isEmpty(email)) {
-            findViewById<EditText>(R.id.fieldEmail).setText("required")
+        val email = findViewById<TextInputEditText>(R.id.fieldEmail);
+        //val email = findViewById<EditText>(R.id.fieldEmail).toString()
+        if (TextUtils.isEmpty(email.text) || (email.text.toString() == "required")) {
+            email.setText("required")
+
+            valid = false
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(email.text.toString()).matches()) {
+            email.setText("please enter valid email")
+
             valid = false
         }
-        val password = R.id.fieldPassword.toString()
-        if (TextUtils.isEmpty(password)) {
-            findViewById<EditText>(R.id.fieldPassword).setText("required")
+
+        val password = findViewById<TextInputEditText>(R.id.fieldPassword);
+        if (TextUtils.isEmpty(password.text) || (password.text.toString() == "required")) {
+            password.setText("required")
+            password.transformationMethod = PasswordTransformationMethod.getInstance()
+
+            valid = false
+        } else if ((password.text.toString().length < 5) || (password.text.toString() == "password too short")) {
+            password.setText("password too short")
+            password.transformationMethod = PasswordTransformationMethod.getInstance()
+
             valid = false
         }
         return valid
     }
 
     fun createAccount(view: View) {
-        val email = findViewById<EditText>(R.id.fieldEmail).text.toString()
-        val password = findViewById<EditText>(R.id.fieldPassword).text.toString()
+        val email = findViewById<TextInputEditText>(R.id.fieldEmail).text.toString()
+        val password = findViewById<TextInputEditText>(R.id.fieldPassword).text.toString()
         Log.d(TAG, "createAccount:$email")
         if (!validateForm()) {
             return
@@ -72,11 +95,11 @@ class FirebaseLogin : AppCompatActivity() {
                                 Toast.LENGTH_SHORT).show()
                     }
                 }
-        }
+    }
 
-    fun signIn(view: View){
-        val email = findViewById<EditText>(R.id.fieldEmail).text.toString()
-        val password = findViewById<EditText>(R.id.fieldPassword).text.toString()
+    fun signIn(view: View) {
+        val email = findViewById<TextInputEditText>(R.id.fieldEmail).text.toString()
+        val password = findViewById<TextInputEditText>(R.id.fieldPassword).text.toString()
         Log.d(TAG, "createAccount:$email")
         if (!validateForm()) {
             return

@@ -47,4 +47,5 @@
     <string name="tv_filling_level">Filling level: </string>
     <string name="ble_connected">Successful connected to dispenser</string>
     <string name="current_theft">Attention Content is stolen</string>
+    <string name="button_endQuiz">end Quiz</string>
 </resources>
