@@ -23,8 +23,6 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.quiz.firebase.FirebaseLogin;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
+import androidx.appcompat.app.AppCompatActivity;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
 import ch.mse.quiz.permission.PermissionService;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private Button btnStartQuizButton;
     private NumberPicker npNumberOfQuestions;
-    private NumberPicker npTopic;
+    public NumberPicker npTopic;
     private BluetoothDevice device;
     private BluetoothGatt deviceGatt;
     private static final int REQUEST_ENABLE_BT = 1;
@@ -62,12 +61,11 @@ public class MainActivity extends AppCompatActivity {
     static int LAUNCH_SECOND_ACTIVITY = 11;
     public static final String USER_AUTH = "user_auth";
     //Getting Firebase Instance
-    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    public FirebaseDatabase database = null;
     DatabaseReference dbRef;
 
     private Thread theftThread;
     private boolean theftNotificationShown = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private ArrayList<String> getTopics() {
+    public ArrayList<String> getTopics() {
 
         ArrayList<String> topics = new ArrayList<String>();
 
@@ -200,8 +198,6 @@ public class MainActivity extends AppCompatActivity {
                 npTopic.setMaxValue(topics.size());
                 npTopic.setDisplayedValues(topicSelection);
             }
-
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage());

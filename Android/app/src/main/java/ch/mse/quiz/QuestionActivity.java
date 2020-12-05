@@ -15,8 +15,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import androidx.appcompat.app.AppCompatActivity;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.models.question;
 import nl.dionsegijn.konfetti.KonfettiView;
@@ -169,7 +168,7 @@ public class QuestionActivity extends AppCompatActivity {
     }
 
     //TODO: read random questions from FirebaseDB
-    private void getQuestions() {
+    public void getQuestions() {
         dbRef = database.getReference("topics/" + quizTopic + "/questions");
 
         dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -183,7 +182,6 @@ public class QuestionActivity extends AppCompatActivity {
                     questions.add(i.getValue(question.class));
                 });
                 // if less questions are in the DB then chosen by the user
-                //TODO: discuss UX for this matter and possibly add Toast to inform user
                 if (questionnr <= questionNumber) {
                     questionNumber = questionnr;
                     Toast.makeText(getBaseContext(), "Nr. of question adjusted. Only " + questionnr + " questions available.", Toast.LENGTH_SHORT).show();
