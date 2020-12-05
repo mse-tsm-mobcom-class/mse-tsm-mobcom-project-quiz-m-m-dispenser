@@ -23,6 +23,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.quiz.firebase.FirebaseLogin;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -36,7 +38,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-import androidx.appcompat.app.AppCompatActivity;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
 import ch.mse.quiz.permission.PermissionService;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
     static int LAUNCH_SECOND_ACTIVITY = 11;
     public static final String USER_AUTH = "user_auth";
     //Getting Firebase Instance
-    public FirebaseDatabase database = null;
+    public FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference dbRef;
 
     private Thread theftThread;

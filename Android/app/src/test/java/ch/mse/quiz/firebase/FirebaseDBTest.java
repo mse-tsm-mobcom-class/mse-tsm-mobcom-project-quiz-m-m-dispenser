@@ -1,9 +1,9 @@
 package ch.mse.quiz.firebase;
 
-import com.google.firebase.FirebaseApp;
+import android.content.Context;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.ktx.Firebase;
 
 import junit.framework.TestCase;
 
@@ -11,16 +11,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.BDDMockito;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
-import java.sql.DriverManager;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -28,20 +26,18 @@ import java.util.concurrent.TimeUnit;
 import ch.mse.quiz.MainActivity;
 
 
-@RunWith(PowerMockRunner.class)
+@RunWith(RobolectricTestRunner.class)
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PrepareForTest(FirebaseDatabase.class)
 public class FirebaseDBTest extends TestCase {
 
     @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
+    public PowerMockRule rule = new PowerMockRule();
 
     @Mock
     public MainActivity mainActivity;
 
-    @Mock
-    FirebaseApp firebaseApp;
-    @Mock
     FirebaseDatabase firebaseDatabase;
-    @Mock
     DatabaseReference dbRef;
 
 
@@ -49,14 +45,14 @@ public class FirebaseDBTest extends TestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        PowerMockito.mockStatic(FirebaseApp.class);
-        BDDMockito.given(FirebaseApp.getInstance()).willReturn(firebaseApp);
+        firebaseDatabase = PowerMockito.mock(FirebaseDatabase.class);
+        dbRef = PowerMockito.mock(DatabaseReference.class);
+
+        Context context = PowerMockito.mock(Context.class);
 
         PowerMockito.mockStatic(FirebaseDatabase.class);
-        BDDMockito.given(FirebaseDatabase.getInstance()).willReturn(firebaseDatabase);
+        Mockito.when(FirebaseDatabase.getInstance()).thenReturn(firebaseDatabase);
         Mockito.when(firebaseDatabase.getReference(Mockito.anyString())).thenReturn(dbRef);
-
-
 
 
         //FirebaseApp.initializeApp(mainActivity.getBaseContext());
