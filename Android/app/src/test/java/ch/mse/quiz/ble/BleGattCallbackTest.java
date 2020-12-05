@@ -116,7 +116,7 @@ public class BleGattCallbackTest extends TestCase {
 
     @Test
     public void onCharacteristicChanged() {
-        byte[] state = {0x01};
+        byte[] state = {0x00, 0x01};
         byte[] flevel = {0x000E};
         mmDispenserStateCharacteristic.setValue(state);
         mmDispenserFillingLevelCharacteristic.setValue(flevel);
