@@ -1,3 +1,11 @@
+// Copyright (c) 2020, Steiner Pascal, Strässle Nikolai, Radinger Martin
+// All rights reserved.
+
+// Licensed under LICENSE, see LICENSE file
+
+// Based on https://github.com/tamberg/mse-tsm-mobcom licensed under CCO 1.0
+// Based on https://github.com/adafruit/Adafruit_VL53L0X licensed under MIT
+
 #include <Arduino.h>
 #include <bluefruit.h>
 #include <Servo.h>
@@ -18,7 +26,9 @@ long rangeInMilimeterSum = 0;
 int measureCount = 0;
 
 // 113A0001-FD33-441B-9A57-E9F1C29633D3 => service
-// 113A0002-FD33-441B-9A57-E9F1C29633D3 => characteristic
+// 113A0002-FD33-441B-9A57-E9F1C29633D3 => characteristic dispenser state
+// 113A0003-FD33-441B-9A57-E9F1C29633D3 => characteristic dispense
+// 113A0004-FD33-441B-9A57-E9F1C29633D3 => characteristic filling level
 // https://yupana-engineering.com/online-uuid-to-c-array-converter
 
 uint8_t const mmDispenserSerivceUuid[] = {0xD3, 0x33, 0x96, 0xC2, 0xF1, 0xE9, 0x57, 0x9A, 0x1B, 0x44, 0x33, 0xFD, 0x01, 0x00, 0x3A, 0x11};
