@@ -1,3 +1,8 @@
+// Copyright (c) 2020, Steiner Pascal, Strässle Nikolai, Radinger Martin
+// All rights reserved.
+
+// Licensed under LICENSE, see LICENSE file
+
 package ch.mse.quiz;
 
 import android.content.Intent;
@@ -31,6 +36,7 @@ public class QuizResultActivity extends AppCompatActivity {
     private TextView results;
     private ListView leaderboard;
     private Button restartQuiz;
+    private Button endQuiz;
     //scores this round
     private int userScore;
     private int totalQuestions;
@@ -81,6 +87,14 @@ public class QuizResultActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(QuizResultActivity.this, MainActivity.class);
                 startActivity(intent);
+                finish();
+            }
+        });
+
+        endQuiz = findViewById(R.id.button_endQuiz);
+        endQuiz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 finish();
             }
         });
@@ -156,7 +170,7 @@ public class QuizResultActivity extends AppCompatActivity {
 
         //display top 5
         String highscoreArray[];
-        if(playerScores.size()<5) {
+        if (playerScores.size() < 5) {
             highscoreArray = new String[playerScores.size()];
             for (int i = 0; i < playerScores.size(); i++) {
                 highscoreArray[i] = playerScores.get(i).getUserName() + " Score " + playerScores.get(i).getUserScore();
@@ -177,12 +191,12 @@ public class QuizResultActivity extends AppCompatActivity {
         int n = userScores.size();
         userScore tempUser = new userScore();
 
-        for(int i=n; i > 1; i--){
-            for(int j=i-1; j > 0; j--){
+        for (int i = n; i > 1; i--) {
+            for (int j = i - 1; j > 0; j--) {
                 //bubble up if score greater
-                if(userScores.get(j-1).getUserScore() < userScores.get(j).getUserScore()){
-                    tempUser = userScores.get(j-1);
-                    userScores.set(j-1, userScores.get(j));
+                if (userScores.get(j - 1).getUserScore() < userScores.get(j).getUserScore()) {
+                    tempUser = userScores.get(j - 1);
+                    userScores.set(j - 1, userScores.get(j));
                     userScores.set(j, tempUser);
                 }
 
