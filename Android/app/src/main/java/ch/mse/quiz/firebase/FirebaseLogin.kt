@@ -43,7 +43,6 @@ class FirebaseLogin : AppCompatActivity() {
         var valid = true
 
         val email = findViewById<TextInputEditText>(R.id.fieldEmail);
-        //val email = findViewById<EditText>(R.id.fieldEmail).toString()
         if (TextUtils.isEmpty(email.text) || (email.text.toString() == "required")) {
             email.setText("required")
 
