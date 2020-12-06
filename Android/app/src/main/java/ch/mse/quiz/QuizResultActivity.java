@@ -14,23 +14,17 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 import ch.mse.quiz.listeners.FirebaseScoreListener;
-import ch.mse.quiz.models.userScore;
-
-import static android.content.ContentValues.TAG;
+import ch.mse.quiz.models.UserScore;
 
 public class QuizResultActivity extends AppCompatActivity {
     private static final String LOG_TAG = QuizResultActivity.class.getSimpleName();
@@ -43,8 +37,8 @@ public class QuizResultActivity extends AppCompatActivity {
     private int totalQuestions;
     private String quizTopic;
     //leaderboard user scores
-    public ArrayList<userScore> playerScores;
-    public userScore currentPlayer;
+    public ArrayList<UserScore> playerScores;
+    public UserScore currentPlayer;
 
     //firebase
     //Getting Firebase Instance
@@ -71,7 +65,7 @@ public class QuizResultActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //set current user values
-        currentPlayer = new userScore();
+        currentPlayer = new UserScore();
         currentPlayer.setUserName(currentUser.getEmail());
         currentPlayer.setUserScore(userScore);
 
@@ -137,7 +131,7 @@ public class QuizResultActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onDestroy");
     }
 
-    private void updateUserScores(userScore currentPlayer) {
+    private void updateUserScores(UserScore currentPlayer) {
         //Getting Reference to highscore table
         dbRef = database.getReference("Leaders_" + quizTopic);
 
@@ -152,7 +146,7 @@ public class QuizResultActivity extends AppCompatActivity {
         dbRef.setValue(playerScores);
 
         //display top 5
-        String highscoreArray[];
+        String[] highscoreArray;
         if (playerScores.size() < 5) {
             highscoreArray = new String[playerScores.size()];
             for (int i = 0; i < playerScores.size(); i++) {
@@ -170,9 +164,9 @@ public class QuizResultActivity extends AppCompatActivity {
         leaderboard.setAdapter(adapter);
     }
 
-    private void bubbleSort(ArrayList<userScore> userScores) {
+    private void bubbleSort(ArrayList<UserScore> userScores) {
         int n = userScores.size();
-        userScore tempUser = new userScore();
+        UserScore tempUser = new UserScore();
 
         for (int i = n; i > 1; i--) {
             for (int j = i - 1; j > 0; j--) {

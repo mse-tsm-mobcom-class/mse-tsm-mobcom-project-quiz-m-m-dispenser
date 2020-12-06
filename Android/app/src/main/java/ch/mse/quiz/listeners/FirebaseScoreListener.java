@@ -2,25 +2,26 @@ package ch.mse.quiz.listeners;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
 import ch.mse.quiz.QuizResultActivity;
-import ch.mse.quiz.models.userScore;
+import ch.mse.quiz.models.UserScore;
 
 import static android.content.ContentValues.TAG;
 
 public class FirebaseScoreListener implements ValueEventListener {
 
-    private ArrayList<userScore> playerScores;
-    private QuizResultActivity quizResultActivity;
-    private userScore currentPlayer;
+    private final ArrayList<UserScore> playerScores;
+    private final QuizResultActivity quizResultActivity;
+    private final UserScore currentPlayer;
 
-    public FirebaseScoreListener(ArrayList<userScore> playerScores, userScore currentPlayer, QuizResultActivity quizResultActivity) {
+    public FirebaseScoreListener(ArrayList<UserScore> playerScores, UserScore currentPlayer, QuizResultActivity quizResultActivity) {
         this.playerScores = playerScores;
         this.quizResultActivity = quizResultActivity;
         this.currentPlayer = currentPlayer;
@@ -32,7 +33,7 @@ public class FirebaseScoreListener implements ValueEventListener {
         //read all users for that topic
         Iterable<DataSnapshot> children = snapshot.getChildren();
         children.forEach(i -> {
-            playerScores.add(i.getValue(userScore.class));
+            playerScores.add(i.getValue(UserScore.class));
         });
         playerScores.add(currentPlayer);
 

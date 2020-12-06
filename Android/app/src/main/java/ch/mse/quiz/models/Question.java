@@ -5,11 +5,7 @@
 
 package ch.mse.quiz.models;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class question {
+public class Question {
     private String question;
     private int correctAnswer;
     private String answer1;
@@ -17,11 +13,11 @@ public class question {
     private String answer3;
     private String answer4;
 
-    public question() {
+    public Question() {
 
     }
 
-    public question(String question, int correctAnswer, String answer1, String answer2, String answer3, String answer4) {
+    public Question(String question, int correctAnswer, String answer1, String answer2, String answer3, String answer4) {
         this.question = question;
         this.correctAnswer = correctAnswer;
         this.answer1 = answer1;

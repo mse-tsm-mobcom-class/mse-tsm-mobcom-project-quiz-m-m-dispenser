@@ -1,28 +1,27 @@
 package ch.mse.quiz.listeners;
 
 import android.util.Log;
-import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.function.Function;
 
-import androidx.annotation.NonNull;
 import ch.mse.quiz.QuestionActivity;
-import ch.mse.quiz.models.question;
+import ch.mse.quiz.models.Question;
 
 import static android.content.ContentValues.TAG;
 
 public class FirebaseQuestionListener implements ValueEventListener {
 
-    private final ArrayList<question> questions;
+    private final ArrayList<Question> questions;
     private int questionNumber;
-    private QuestionActivity questionActivity;
+    private final QuestionActivity questionActivity;
 
-    public FirebaseQuestionListener(ArrayList<question> questions, int questionNumber, QuestionActivity questionActivity) {
+    public FirebaseQuestionListener(ArrayList<Question> questions, int questionNumber, QuestionActivity questionActivity) {
         this.questions = questions;
         this.questionNumber = questionNumber;
         this.questionActivity = questionActivity;
@@ -33,7 +32,7 @@ public class FirebaseQuestionListener implements ValueEventListener {
         int questionnr = (int) dataSnapshot.getChildrenCount();
         Iterable<DataSnapshot> children = dataSnapshot.getChildren();
         children.forEach(i -> {
-            questions.add(i.getValue(question.class));
+            questions.add(i.getValue(Question.class));
         });
         // if less questions are in the DB then chosen by the user
         if (questionnr <= questionNumber) {

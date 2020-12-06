@@ -26,7 +26,7 @@ import java.util.Locale;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.listeners.FirebaseQuestionListener;
 import ch.mse.quiz.listeners.StartQuizListener;
-import ch.mse.quiz.models.question;
+import ch.mse.quiz.models.Question;
 import nl.dionsegijn.konfetti.KonfettiView;
 import nl.dionsegijn.konfetti.models.Shape;
 import nl.dionsegijn.konfetti.models.Size;
@@ -43,7 +43,7 @@ public class QuestionActivity extends AppCompatActivity {
     private int questionNumber;
     private String quizTopic;
     private int userScore;
-    public ArrayList<question> questions = new ArrayList<question>();
+    public ArrayList<Question> questions = new ArrayList<Question>();
     private final Handler handler = new Handler();
 
     private TextView tvTimer;
@@ -266,7 +266,7 @@ public class QuestionActivity extends AppCompatActivity {
     public void createQuestion(int i) {
         Log.d(LOG_TAG, "new question created!");
         tvProgress.setText("Topic " + quizTopic + " Question " + currentQuestion + " out of " + questionNumber);
-        question q = questions.get(i - 1);
+        Question q = questions.get(i - 1);
         tvQuestion.setText(q.getQuestion());
 
         buttonAnswerA.setText(q.getAnswer1());
