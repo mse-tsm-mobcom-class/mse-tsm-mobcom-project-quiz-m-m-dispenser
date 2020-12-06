@@ -2,6 +2,7 @@ package ch.mse.quiz.firebase;
 
 import android.content.Context;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -11,33 +12,29 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.robolectric.RobolectricTestRunner;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import ch.mse.quiz.MainActivity;
+
+import static org.mockito.Mockito.mock;
 
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
-@PrepareForTest(FirebaseDatabase.class)
+@PrepareForTest(MainActivity.class)
 public class FirebaseDBTest extends TestCase {
-
-    @Rule
-    public PowerMockRule rule = new PowerMockRule();
 
     @Mock
     public MainActivity mainActivity;
-
     FirebaseDatabase firebaseDatabase;
+    @Mock
     DatabaseReference dbRef;
 
 
@@ -45,21 +42,19 @@ public class FirebaseDBTest extends TestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        firebaseDatabase = PowerMockito.mock(FirebaseDatabase.class);
-        dbRef = PowerMockito.mock(DatabaseReference.class);
+        //firebaseDatabase = PowerMockito.mock(FirebaseDatabase.class);
+        //dbRef = PowerMockito.mock(DatabaseReference.class);
 
-        Context context = PowerMockito.mock(Context.class);
+        //Context context = PowerMockito.mock(Context.class);
+        Context context = mock(MainActivity.class);
 
-        PowerMockito.mockStatic(FirebaseDatabase.class);
-        Mockito.when(FirebaseDatabase.getInstance()).thenReturn(firebaseDatabase);
-        Mockito.when(firebaseDatabase.getReference(Mockito.anyString())).thenReturn(dbRef);
-
-
-        //FirebaseApp.initializeApp(mainActivity.getBaseContext());
-        //database = FirebaseDatabase.getInstance();
+        //PowerMockito.mockStatic(FirebaseDatabase.class);
+        //Mockito.when(FirebaseDatabase.getInstance()).thenReturn(firebaseDatabase);
         // 10.0.2.2 is the special IP address to connect to the 'localhost' of
         // the host computer from an Android emulator.
         //mainActivity.database.useEmulator("192.168.8.106", 9000);
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        firebaseDatabase.useEmulator("10.0.2.2", 9000);
     }
 
     @Test

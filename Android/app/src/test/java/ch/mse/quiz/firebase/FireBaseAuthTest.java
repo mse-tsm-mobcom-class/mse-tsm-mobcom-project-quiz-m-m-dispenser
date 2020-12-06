@@ -2,6 +2,7 @@ package ch.mse.quiz.firebase;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -15,6 +16,8 @@ import junit.framework.TestCase;
 import java.util.concurrent.Executor;
 
 import androidx.annotation.NonNull;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
+import ch.mse.quiz.MainActivity;
 
 
 @RunWith(RobolectricTestRunner.class)
