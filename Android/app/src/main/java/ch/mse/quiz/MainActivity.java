@@ -129,8 +129,6 @@ public class MainActivity extends AppCompatActivity {
         npNumberOfQuestions.setMaxValue(7);
         npNumberOfQuestions.setWrapSelectorWheel(false);
 
-        ArrayList<String> topiclist = getTopics();
-
         btnStartQuizButton.setOnClickListener(v -> {
             Log.d(LOG_TAG, "start Quiz!");
 
@@ -139,7 +137,9 @@ public class MainActivity extends AppCompatActivity {
             //if(this.bleGattCallback.isConnected()) {
             //yes? start Quiz Intent
             int choice = npTopic.getValue();
-            String topic = topiclist.get(choice - 1);
+            String[] displayedValues = npTopic.getDisplayedValues();
+
+            String topic = displayedValues[choice - 1];
             Bundle extras = new Bundle();
             extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
             extras.putString(QUESTION_TOPIC, topic);
@@ -179,12 +179,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public ArrayList<String> getTopics() {
+    public void getTopics() {
 
         ArrayList<String> topics = new ArrayList<String>();
 
         dbRef.addListenerForSingleValueEvent(new FirebaseValueEventListener(topics, npTopic));
-        return topics;
     }
 
     @Override
