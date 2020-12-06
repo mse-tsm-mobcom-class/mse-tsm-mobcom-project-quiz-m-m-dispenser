@@ -27,7 +27,8 @@ public class FirebaseTopicListener implements ValueEventListener {
         children.forEach(i -> {
             topics.add(i.getKey());
         });
-        String[] topicSelection = topics.toArray(new String[0]);
+        String[] topicSelection = topics.toArray(new String[topics.size()]);
+        npTopic.setDisplayedValues(null);
         //which topic?
         npTopic.setMinValue(1);
         npTopic.setMaxValue(topics.size());
