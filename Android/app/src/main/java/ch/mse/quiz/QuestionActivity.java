@@ -26,6 +26,7 @@ import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
 import ch.mse.quiz.ble.BleGattCallback;
+import ch.mse.quiz.listeners.FirebaseQuestionListener;
 import ch.mse.quiz.models.question;
 import nl.dionsegijn.konfetti.KonfettiView;
 import nl.dionsegijn.konfetti.models.Shape;
@@ -170,31 +171,7 @@ public class QuestionActivity extends AppCompatActivity {
     public void getQuestions() {
         dbRef = database.getReference("topics/" + quizTopic + "/questions");
 
-        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                //check if amount of question is h
-                int questionnr = (int) dataSnapshot.getChildrenCount();
-                Log.d(LOG_TAG, "questionnr "+questionnr);
-                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-                children.forEach(i -> {
-                    questions.add(i.getValue(question.class));
-                });
-                // if less questions are in the DB then chosen by the user
-                if (questionnr <= questionNumber) {
-                    questionNumber = questionnr;
-                    Toast.makeText(getBaseContext(), "Nr. of question adjusted. Only " + questionnr + " questions available.", Toast.LENGTH_SHORT).show();
-                }
-                //set first question UI
-                createQuestion(currentQuestion);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage());
-
-            }
-        });
+        dbRef.addListenerForSingleValueEvent(new FirebaseQuestionListener(questions,questionNumber,this));
     }
 
     @Override
@@ -289,7 +266,7 @@ public class QuestionActivity extends AppCompatActivity {
     }
 
     //create new question from list and set UI accordingly
-    private void createQuestion(int i) {
+    public void createQuestion(int i) {
         Log.d(LOG_TAG, "new question created!");
         tvProgress.setText("Topic " + quizTopic + " Question " + currentQuestion + " out of " + questionNumber);
         question q = questions.get(i - 1);

@@ -42,11 +42,6 @@ public class FirebaseDBTest extends TestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        //firebaseDatabase = PowerMockito.mock(FirebaseDatabase.class);
-        //dbRef = PowerMockito.mock(DatabaseReference.class);
-
-        //Context context = PowerMockito.mock(Context.class);
-        Context context = mock(MainActivity.class);
 
         //PowerMockito.mockStatic(FirebaseDatabase.class);
         //Mockito.when(FirebaseDatabase.getInstance()).thenReturn(firebaseDatabase);
@@ -77,6 +72,8 @@ public class FirebaseDBTest extends TestCase {
         future.get();
 
     }
+
+
 
 
 }
