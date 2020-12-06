@@ -13,11 +13,10 @@ import static android.content.ContentValues.TAG;
 
 public class FirebaseTopicListener implements ValueEventListener {
 
-    private final ArrayList<String> topics;
+    private final ArrayList<String> topics = new ArrayList<>();
     private final NumberPicker npTopic;
 
-    public FirebaseTopicListener(ArrayList<String> topics, NumberPicker npTopic) {
-        this.topics = topics;
+    public FirebaseTopicListener(NumberPicker npTopic) {
         this.npTopic = npTopic;
     }
 
@@ -38,5 +37,9 @@ public class FirebaseTopicListener implements ValueEventListener {
     @Override
     public void onCancelled(DatabaseError databaseError) {
         Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage());
+    }
+
+    public ArrayList<String> getTopics() {
+        return topics;
     }
 }

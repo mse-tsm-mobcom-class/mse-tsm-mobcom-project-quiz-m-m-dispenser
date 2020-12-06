@@ -33,11 +33,10 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
 import ch.mse.quiz.listeners.FirebaseTopicListener;
+import ch.mse.quiz.listeners.StartQuizListener;
 import ch.mse.quiz.permission.PermissionService;
 import ch.mse.quiz.printes.ToastPrinter;
 import ch.mse.quiz.runnables.TheftRunnable;
@@ -45,8 +44,6 @@ import ch.mse.quiz.runnables.TheftRunnable;
 import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity implements ToastPrinter {
-    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.NUMBER";
-    public static final String QUESTION_TOPIC = "ch.mse.quiz.extra.TOPIC";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private Button btnStartQuizButton;
     private NumberPicker npNumberOfQuestions;
@@ -67,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
 
     private Thread theftThread;
 
+    private FirebaseTopicListener firebaseTopicListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
         }
         //Getting Reference to Root Node
         dbRef = database.getReference("topics");
+
         //firebase init finished
         getTopics();
 
@@ -126,28 +126,9 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
         npNumberOfQuestions.setMaxValue(7);
         npNumberOfQuestions.setWrapSelectorWheel(false);
 
-        btnStartQuizButton.setOnClickListener(v -> {
-            if (!bleGattCallback.isConnected()) {
-                print(getString(R.string.toastNoDispenserConnected));
-                return;
-            }
-            Log.d(LOG_TAG, "start Quiz!");
+        getTopics();
 
-            //if(this.bleGattCallback.isConnected()) {
-            //yes? start Quiz Intent
-            int choice = npTopic.getValue();
-            String[] displayedValues = npTopic.getDisplayedValues();
-
-            String topic = displayedValues[choice - 1];
-            Bundle extras = new Bundle();
-            extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
-            extras.putString(QUESTION_TOPIC, topic);
-
-            Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
-            intent.putExtras(extras);
-
-            startActivity(intent);
-        });
+        btnStartQuizButton.setOnClickListener(new StartQuizListener(this, this, bleGattCallback, npTopic, npNumberOfQuestions, firebaseTopicListener.getTopics()));
     }
 
     private void checkTheft() {
@@ -166,9 +147,11 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
 
     public void getTopics() {
 
-        ArrayList<String> topics = new ArrayList<String>();
+        if (null == firebaseTopicListener) {
+            firebaseTopicListener = new FirebaseTopicListener(npTopic);
+        }
 
-        dbRef.addListenerForSingleValueEvent(new FirebaseTopicListener(topics, npTopic));
+        dbRef.addListenerForSingleValueEvent(firebaseTopicListener);
     }
 
     @Override
