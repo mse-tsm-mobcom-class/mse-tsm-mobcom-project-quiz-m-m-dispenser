@@ -61,12 +61,4 @@
         android:text="@string/start_quiz"
         android:textColor="@color/white" />
 
-    <Button
-        android:id="@+id/btnDispense"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/button_startQuiz"
-        android:layout_centerHorizontal="true"
-        android:text="@string/dispenserState" />
-
 </RelativeLayout>
