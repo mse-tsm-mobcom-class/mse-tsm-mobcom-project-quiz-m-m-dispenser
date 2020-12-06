@@ -38,6 +38,5 @@ public class FirebaseValueEventListener implements ValueEventListener {
     @Override
     public void onCancelled(DatabaseError databaseError) {
         Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage());
-
     }
 }

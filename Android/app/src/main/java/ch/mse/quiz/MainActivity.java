@@ -39,10 +39,12 @@ import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
 import ch.mse.quiz.listeners.FirebaseValueEventListener;
 import ch.mse.quiz.permission.PermissionService;
+import ch.mse.quiz.printes.ToastPrinter;
+import ch.mse.quiz.runnables.TheftRunnable;
 
 import static android.content.ContentValues.TAG;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ToastPrinter {
     public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.NUMBER";
     public static final String QUESTION_TOPIC = "ch.mse.quiz.extra.TOPIC";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
@@ -64,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference dbRef;
 
     private Thread theftThread;
-    private boolean theftNotificationShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +80,7 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(this, FirebaseLogin.class);
             startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
         } else {
-            Toast.makeText(this, "Logged in as:" + currentUser.getEmail(),
-                    Toast.LENGTH_LONG).show();
+            print(getString(R.string.toastLoggedIn) + currentUser.getEmail());
         }
         //Getting Reference to Root Node
         dbRef = database.getReference("topics");
@@ -88,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
         initPermissions();
 
-        Button btnDispense = findViewById(R.id.btnDispense);
-        btnDispense.setOnClickListener(v -> bleGattCallback.dispense());
         initQuiz();
         checkTheft();
 
@@ -105,12 +103,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == LAUNCH_SECOND_ACTIVITY) {
             if (resultCode == Activity.RESULT_OK) {
                 String result = data.getStringExtra("result");
-                Toast.makeText(this, "Logged in as: " + result,
-                        Toast.LENGTH_LONG).show();
+                print(getString(R.string.toastLoggedIn) + result);
             }
             if (resultCode == Activity.RESULT_CANCELED) {
-                Toast.makeText(this, "Authentication failed.",
-                        Toast.LENGTH_LONG).show();
+                print(getString(R.string.toastAuthFailed));
             }
         }
     }//onActivityResult
@@ -132,6 +128,10 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> topiclist = getTopics();
 
         btnStartQuizButton.setOnClickListener(v -> {
+            if (!bleGattCallback.isConnected()) {
+                print(getString(R.string.toastNoDispenserConnected));
+                return;
+            }
             Log.d(LOG_TAG, "start Quiz!");
 
             //are we connected to M&M dispenser?
@@ -148,30 +148,16 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtras(extras);
 
             startActivity(intent);
-            //} else {
-            //no? ask user to connect first
-            // Toast.makeText(getBaseContext(), "Please connect to the M&M candy store!", Toast.LENGTH_SHORT).show();
-            //}
         });
     }
 
     private void checkTheft() {
+        Runnable theftRunnable = new TheftRunnable(this, bleGattCallback);
         theftThread = new Thread(() -> {
             while (!theftThread.isInterrupted()) {
                 try {
                     Thread.sleep(100);
-                    runOnUiThread(() -> {
-                        if (bleGattCallback.isTheft() && !theftNotificationShown) {
-                            Toast toast = Toast.makeText(getApplicationContext(), getResources().getText(R.string.current_theft),
-                                    Toast.LENGTH_LONG);
-                            TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
-                            toastMessage.setTextColor(Color.RED);
-                            toast.show();
-                            theftNotificationShown = true;
-                        } else {
-                            theftNotificationShown = false;
-                        }
-                    });
+                    runOnUiThread(theftRunnable);
                 } catch (InterruptedException e) {
                     theftThread.interrupt();
                 }
@@ -216,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.i(LOG_TAG, device.getAddress());
                                 deviceGatt = device.connectGatt(MainActivity.this, false, bleGattCallback,
                                         BluetoothDevice.TRANSPORT_AUTO);
-                                Toast.makeText(MainActivity.this, R.string.ble_connected, Toast.LENGTH_LONG).show();
+                                print(getString(R.string.ble_connected));
                             }
                         }
                     }
@@ -243,5 +229,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         startBleScanner();
+    }
+
+    @Override
+    public void print(String message) {
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void printError(String message) {
+        Toast toast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
+        TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
+        toastMessage.setTextColor(Color.RED);
+        toast.show();
+    }
+
+    @Override
+    public void printError(int id) {
+        printError(getString(id));
     }
 }

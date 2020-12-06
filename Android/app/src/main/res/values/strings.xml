@@ -48,4 +48,7 @@
     <string name="ble_connected">Successful connected to dispenser</string>
     <string name="current_theft">Attention Content is stolen</string>
     <string name="button_endQuiz">end Quiz</string>
+    <string name="toastNoDispenserConnected">No dispenser connected</string>
+    <string name="toastAuthFailed">Authentication failed.</string>
+    <string name="toastLoggedIn">\"Logged in as: \"</string>
 </resources>
