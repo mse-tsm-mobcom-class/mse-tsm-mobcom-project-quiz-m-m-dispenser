@@ -14,6 +14,8 @@ import androidx.annotation.NonNull;
 import ch.mse.quiz.QuestionActivity;
 import ch.mse.quiz.models.question;
 
+import static android.content.ContentValues.TAG;
+
 public class FirebaseQuestionListener implements ValueEventListener {
 
     private final ArrayList<question> questions;
@@ -43,7 +45,7 @@ public class FirebaseQuestionListener implements ValueEventListener {
     }
 
     @Override
-    public void onCancelled(@NonNull DatabaseError error) {
-
+    public void onCancelled(@NonNull DatabaseError databaseError) {
+        Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage());
     }
 }

@@ -19,37 +19,49 @@ import java.util.ArrayList;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = {Build.VERSION_CODES.O_MR1})
-public class FirebaseValueEventListenerTest extends TestCase {
-
+public class FirebaseTopicListenerTest extends TestCase {
+    private FirebaseTopicListener firebaseTopicListener;
     private NumberPicker numberPicker;
+    private ArrayList<DataSnapshot> data;
+    private ArrayList<String> topics;
 
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        topics = new ArrayList<>();
+        data = new ArrayList<>();
         numberPicker = PowerMockito.mock(NumberPicker.class);
+        firebaseTopicListener = new FirebaseTopicListener(topics, numberPicker);
     }
 
     @Test
     public void onDataChange() {
-        ArrayList<String> topics = new ArrayList<>();
-        FirebaseValueEventListener firebaseValueEventListener = new FirebaseValueEventListener(topics, numberPicker);
+        // mock datasnapshots and add 2 times
         DataSnapshot dataSnapshot = PowerMockito.mock(DataSnapshot.class);
-        ArrayList<DataSnapshot> data = new ArrayList<>();
         DataSnapshot d1 = PowerMockito.mock(DataSnapshot.class);
-        PowerMockito.when(d1.getKey()).thenReturn("Test Topic");
+        DataSnapshot d2 = PowerMockito.mock(DataSnapshot.class);
+
+        // mock data and add 2x
+        PowerMockito.when(d1.getKey()).thenReturn("First topic");
+        PowerMockito.when(d2.getKey()).thenReturn("Second topic");
         data.add(d1);
-        Iterable<DataSnapshot> dataSnapshots = data;
-        PowerMockito.when(dataSnapshot.getChildren()).thenReturn(dataSnapshots);
-        firebaseValueEventListener.onDataChange(dataSnapshot);
+        data.add(d2);
+
+        // mock datasnapshot
+        PowerMockito.when(dataSnapshot.getChildren()).thenReturn(data);
+        firebaseTopicListener.onDataChange(dataSnapshot);
+        // should contain elements
         assertTrue(0 < topics.size());
+        //should contain 2 elements
+        assertTrue(2 == topics.size());
     }
 
     @Test
     public void onCancelled() {
         ArrayList<String> topics = new ArrayList<>();
-        FirebaseValueEventListener firebaseValueEventListener = new FirebaseValueEventListener(topics, numberPicker);
-        firebaseValueEventListener.onCancelled(PowerMockito.mock(DatabaseError.class));
+        FirebaseTopicListener firebaseTopicListener = new FirebaseTopicListener(topics, numberPicker);
+        firebaseTopicListener.onCancelled(PowerMockito.mock(DatabaseError.class));
         assertTrue(true);
     }
 }

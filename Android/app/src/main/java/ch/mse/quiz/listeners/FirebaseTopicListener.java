@@ -11,12 +11,12 @@ import java.util.ArrayList;
 
 import static android.content.ContentValues.TAG;
 
-public class FirebaseValueEventListener implements ValueEventListener {
+public class FirebaseTopicListener implements ValueEventListener {
 
     private final ArrayList<String> topics;
     private final NumberPicker npTopic;
 
-    public FirebaseValueEventListener(ArrayList<String> topics, NumberPicker npTopic) {
+    public FirebaseTopicListener(ArrayList<String> topics, NumberPicker npTopic) {
         this.topics = topics;
         this.npTopic = npTopic;
     }

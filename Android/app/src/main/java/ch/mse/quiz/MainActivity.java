@@ -37,7 +37,7 @@ import java.util.ArrayList;
 
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleService;
-import ch.mse.quiz.listeners.FirebaseValueEventListener;
+import ch.mse.quiz.listeners.FirebaseTopicListener;
 import ch.mse.quiz.permission.PermissionService;
 
 import static android.content.ContentValues.TAG;
@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         //Getting Reference to Root Node
         dbRef = database.getReference("topics");
         //firebase init finished
+        getTopics();
 
         initPermissions();
 
@@ -131,8 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
         btnStartQuizButton.setOnClickListener(v -> {
             Log.d(LOG_TAG, "start Quiz!");
-
-            //are we connected to M&M dispenser?
 
             //if(this.bleGattCallback.isConnected()) {
             //yes? start Quiz Intent
@@ -183,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<String> topics = new ArrayList<String>();
 
-        dbRef.addListenerForSingleValueEvent(new FirebaseValueEventListener(topics, npTopic));
+        dbRef.addListenerForSingleValueEvent(new FirebaseTopicListener(topics, npTopic));
     }
 
     @Override

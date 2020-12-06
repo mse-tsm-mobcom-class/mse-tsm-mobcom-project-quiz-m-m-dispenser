@@ -63,10 +63,7 @@ public class QuestionActivity extends AppCompatActivity {
     //BLE
     private final BleGattCallback bleGattCallback = BleGattCallback.getInstance();
 
-    //firebase
-    //Getting Firebase Instance
-    final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference dbRef;
+
     private final Runnable newQuestion = new Runnable() {
         @Override
         public void run() {
@@ -166,7 +163,10 @@ public class QuestionActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "-----");
         Log.d(LOG_TAG, "on create");
     }
-
+    //firebase
+    //Getting Firebase Instance
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference dbRef;
     //TODO: read random questions from FirebaseDB
     public void getQuestions() {
         dbRef = database.getReference("topics/" + quizTopic + "/questions");

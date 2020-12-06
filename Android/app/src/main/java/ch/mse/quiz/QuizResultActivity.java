@@ -27,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import ch.mse.quiz.listeners.FirebaseScoreListener;
 import ch.mse.quiz.models.userScore;
 
 import static android.content.ContentValues.TAG;
@@ -140,29 +141,11 @@ public class QuizResultActivity extends AppCompatActivity {
         //Getting Reference to highscore table
         dbRef = database.getReference("Leaders_" + quizTopic);
 
-        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d("dbtag", "ondatachangecalled");
-                //read all users for that topic
-                Iterable<DataSnapshot> children = snapshot.getChildren();
-                children.forEach(i -> {
-                    playerScores.add(i.getValue(userScore.class));
-                });
-                playerScores.add(currentPlayer);
-
-                updateList();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "onCancelled: Something went wrong! Error:" + error.getMessage());
-            }
-        });
+        dbRef.addListenerForSingleValueEvent(new FirebaseScoreListener(playerScores, currentPlayer, this));
 
     }
 
-    private void updateList() {
+    public void updateList() {
         bubbleSort(playerScores);
         //write to DB
         dbRef = database.getReference("Leaders_" + quizTopic);
