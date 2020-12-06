@@ -40,7 +40,6 @@ public class QuestionActivity extends AppCompatActivity {
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private CountDownTimer countDownTimer;
     private long remainingTime;
-    public int counter;
     private int correctAnswer;
     private int currentQuestion;
     private int questionNumber;
@@ -176,7 +175,7 @@ public class QuestionActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //check if amount of question is h
                 int questionnr = (int) dataSnapshot.getChildrenCount();
-
+                Log.d(LOG_TAG, "questionnr "+questionnr);
                 Iterable<DataSnapshot> children = dataSnapshot.getChildren();
                 children.forEach(i -> {
                     questions.add(i.getValue(question.class));

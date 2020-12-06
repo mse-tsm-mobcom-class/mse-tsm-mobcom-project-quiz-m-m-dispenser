@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(this, FirebaseLogin.class);
             startActivityForResult(i, LAUNCH_SECOND_ACTIVITY);
         } else {
-            Toast.makeText(this, "Loged in as:" + currentUser.getEmail(),
+            Toast.makeText(this, "Logged in as:" + currentUser.getEmail(),
                     Toast.LENGTH_LONG).show();
         }
         //Getting Reference to Root Node
@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == LAUNCH_SECOND_ACTIVITY) {
             if (resultCode == Activity.RESULT_OK) {
                 String result = data.getStringExtra("result");
-                Toast.makeText(this, "Loged in as: " + result,
+                Toast.makeText(this, "Logged in as: " + result,
                         Toast.LENGTH_LONG).show();
             }
             if (resultCode == Activity.RESULT_CANCELED) {
