@@ -15,24 +15,21 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-import androidx.appcompat.app.AppCompatActivity;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.listeners.FirebaseQuestionListener;
-import ch.mse.quiz.models.question;
+import ch.mse.quiz.listeners.StartQuizListener;
+import ch.mse.quiz.models.Question;
 import nl.dionsegijn.konfetti.KonfettiView;
 import nl.dionsegijn.konfetti.models.Shape;
 import nl.dionsegijn.konfetti.models.Size;
-
-import static android.content.ContentValues.TAG;
 
 public class QuestionActivity extends AppCompatActivity {
     public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.NUMBER";
@@ -46,7 +43,7 @@ public class QuestionActivity extends AppCompatActivity {
     private int questionNumber;
     private String quizTopic;
     private int userScore;
-    public ArrayList<question> questions = new ArrayList<question>();
+    public ArrayList<Question> questions = new ArrayList<Question>();
     private final Handler handler = new Handler();
 
     private TextView tvTimer;
@@ -117,8 +114,8 @@ public class QuestionActivity extends AppCompatActivity {
         //how many questions to do? get data from MainActivity calling
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        questionNumber = extras.getInt(MainActivity.QUESTION_NUMBER);
-        quizTopic = extras.getString(MainActivity.QUESTION_TOPIC);
+        questionNumber = extras.getInt(StartQuizListener.QUESTION_NUMBER);
+        quizTopic = extras.getString(StartQuizListener.QUESTION_TOPIC);
 
         //read required amount of questions from DB
         getQuestions();
@@ -269,7 +266,7 @@ public class QuestionActivity extends AppCompatActivity {
     public void createQuestion(int i) {
         Log.d(LOG_TAG, "new question created!");
         tvProgress.setText("Topic " + quizTopic + " Question " + currentQuestion + " out of " + questionNumber);
-        question q = questions.get(i - 1);
+        Question q = questions.get(i - 1);
         tvQuestion.setText(q.getQuestion());
 
         buttonAnswerA.setText(q.getAnswer1());

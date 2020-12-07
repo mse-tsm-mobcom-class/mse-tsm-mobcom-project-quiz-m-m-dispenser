@@ -1,7 +1,6 @@
 package ch.mse.quiz.listeners;
 
 import android.os.Build;
-import android.widget.NumberPicker;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -9,26 +8,18 @@ import com.google.firebase.database.DatabaseError;
 import junit.framework.TestCase;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.stubbing.OngoingStubbing;
 import org.powermock.api.mockito.PowerMockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.rule.ActivityTestRule;
 import ch.mse.quiz.QuestionActivity;
-import ch.mse.quiz.models.question;
+import ch.mse.quiz.models.Question;
 
-import static androidx.lifecycle.Lifecycle.State.CREATED;
-import static androidx.lifecycle.Lifecycle.State.INITIALIZED;
-import static androidx.test.espresso.intent.Intents.times;
 import static org.mockito.Mockito.verify;
 
 
@@ -38,13 +29,13 @@ public class FirebaseQuestionListenerTest extends TestCase {
 
     private FirebaseQuestionListener firebaseQuestionListener;
     int questionNumber = 1;
-    ArrayList<question> questions;
+    ArrayList<Question> questions;
     ArrayList<DataSnapshot> data;
 
     @Mock
     QuestionActivity questionActivity;
     @Mock
-    question exquestion;
+    Question exquestion;
 
     @Override
     @Before
@@ -52,7 +43,7 @@ public class FirebaseQuestionListenerTest extends TestCase {
         super.setUp();
         questionActivity = PowerMockito.mock(QuestionActivity.class);
         //exquestion = PowerMockito.mock(question.class);
-        questions = new ArrayList<question>();
+        questions = new ArrayList<Question>();
         data = new ArrayList<DataSnapshot>();
         firebaseQuestionListener = new FirebaseQuestionListener(questions, questionNumber, questionActivity);
     }

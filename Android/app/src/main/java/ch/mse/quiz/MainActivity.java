@@ -6,15 +6,7 @@
 package ch.mse.quiz;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,27 +25,19 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
 import ch.mse.quiz.ble.BleGattCallback;
-import ch.mse.quiz.ble.BleService;
+import ch.mse.quiz.ble.BleScannerService;
 import ch.mse.quiz.listeners.FirebaseTopicListener;
+import ch.mse.quiz.listeners.StartQuizListener;
 import ch.mse.quiz.permission.PermissionService;
 import ch.mse.quiz.printes.ToastPrinter;
 import ch.mse.quiz.runnables.TheftRunnable;
 
-import static android.content.ContentValues.TAG;
-
 public class MainActivity extends AppCompatActivity implements ToastPrinter {
-    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.NUMBER";
-    public static final String QUESTION_TOPIC = "ch.mse.quiz.extra.TOPIC";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private Button btnStartQuizButton;
     private NumberPicker npNumberOfQuestions;
     public NumberPicker npTopic;
-    private BluetoothDevice device;
-    private BluetoothGatt deviceGatt;
-    private static final int REQUEST_ENABLE_BT = 1;
     private final PermissionService permissionService = new PermissionService();
     private final BleGattCallback bleGattCallback = BleGattCallback.getInstance();
 
@@ -66,6 +50,10 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
     DatabaseReference dbRef;
 
     private Thread theftThread;
+
+    private FirebaseTopicListener firebaseTopicListener;
+
+    private BleScannerService bleScannerService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,12 +70,15 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
         } else {
             print(getString(R.string.toastLoggedIn) + currentUser.getEmail());
         }
+        bleScannerService = new BleScannerService(this, this, permissionService, getPackageManager(), bleGattCallback);
         //Getting Reference to Root Node
         dbRef = database.getReference("topics");
+
         //firebase init finished
         getTopics();
 
         initPermissions();
+
 
         initQuiz();
         checkTheft();
@@ -114,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
 
     private void initPermissions() {
         this.permissionService.checkPermissions(MainActivity.this);
-        this.startBleScanner();
+        bleScannerService.startBleScanner();
     }
 
     private void initQuiz() {
@@ -126,28 +117,9 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
         npNumberOfQuestions.setMaxValue(7);
         npNumberOfQuestions.setWrapSelectorWheel(false);
 
-        btnStartQuizButton.setOnClickListener(v -> {
-            if (!bleGattCallback.isConnected()) {
-                print(getString(R.string.toastNoDispenserConnected));
-                return;
-            }
-            Log.d(LOG_TAG, "start Quiz!");
+        getTopics();
 
-            //if(this.bleGattCallback.isConnected()) {
-            //yes? start Quiz Intent
-            int choice = npTopic.getValue();
-            String[] displayedValues = npTopic.getDisplayedValues();
-
-            String topic = displayedValues[choice - 1];
-            Bundle extras = new Bundle();
-            extras.putInt(QUESTION_NUMBER, npNumberOfQuestions.getValue());
-            extras.putString(QUESTION_TOPIC, topic);
-
-            Intent intent = new Intent(MainActivity.this, QuestionActivity.class);
-            intent.putExtras(extras);
-
-            startActivity(intent);
-        });
+        btnStartQuizButton.setOnClickListener(new StartQuizListener(this, this, bleGattCallback, npTopic, npNumberOfQuestions, firebaseTopicListener.getTopics()));
     }
 
     private void checkTheft() {
@@ -166,67 +138,30 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
 
     public void getTopics() {
 
-        ArrayList<String> topics = new ArrayList<String>();
+        if (null == firebaseTopicListener) {
+            firebaseTopicListener = new FirebaseTopicListener(npTopic);
+        }
 
-        dbRef.addListenerForSingleValueEvent(new FirebaseTopicListener(topics, npTopic));
+        dbRef.addListenerForSingleValueEvent(firebaseTopicListener);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NotNull String[] permissions, @NotNull int[] grantResults) {
-        this.startBleScanner();
-    }
-
-    private void startBleScanner() {
-        if (!this.permissionService.hasRequiredPermissions()) {
-            return;
-        }
-        boolean hasBle = getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
-        // Or <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
-        if (hasBle) {
-            Log.d(LOG_TAG, "BLE available");
-            BluetoothManager bluetoothManager =
-                    (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-            BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
-            if (bluetoothAdapter != null && bluetoothAdapter.isEnabled()) {
-                Log.d(LOG_TAG, "BLE enabled");
-                BleService service = new BleService(bluetoothAdapter.getBluetoothLeScanner());
-                service.scan(new ScanCallback() {
-                    @Override
-                    public void onScanResult(int callbackType, ScanResult result) {
-                        super.onScanResult(callbackType, result);
-                        if (null != result && !bleGattCallback.isConnected() && null == device) {
-                            device = result.getDevice();
-                            if (null != device) {
-                                Log.i(LOG_TAG, device.getAddress());
-                                deviceGatt = device.connectGatt(MainActivity.this, false, bleGattCallback,
-                                        BluetoothDevice.TRANSPORT_AUTO);
-                                print(getString(R.string.ble_connected));
-                            }
-                        }
-                    }
-                });
-            } else {
-                Log.d(TAG, "BLE not enabled");
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            }
-        } else {
-            Log.d(LOG_TAG, "BLE not available");
-        }
+        bleScannerService.startBleScanner();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (null != deviceGatt) {
-            deviceGatt.disconnect();
+        if (null != bleGattCallback && null != bleScannerService.getDeviceGatt()) {
+            bleScannerService.getDeviceGatt().disconnect();
         }
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        startBleScanner();
+        bleScannerService.startBleScanner();
     }
 
     @Override

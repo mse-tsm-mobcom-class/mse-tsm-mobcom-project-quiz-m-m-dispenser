@@ -17,10 +17,8 @@ import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 
-import ch.mse.quiz.QuestionActivity;
 import ch.mse.quiz.QuizResultActivity;
-import ch.mse.quiz.models.question;
-import ch.mse.quiz.models.userScore;
+import ch.mse.quiz.models.UserScore;
 
 import static org.mockito.Mockito.verify;
 
@@ -29,14 +27,14 @@ import static org.mockito.Mockito.verify;
 public class FireBaseScoreListenerTest extends TestCase {
 
     private FirebaseScoreListener firebaseScoreListener;
-    ArrayList<userScore> playerScores;
-    public userScore currentPlayer;
+    public UserScore currentPlayer;
+    ArrayList<UserScore> playerScores;
     ArrayList<DataSnapshot> data;
 
     @Mock
     QuizResultActivity quizResultActivity;
     @Mock
-    userScore userScore;
+    UserScore userScore;
 
     @Override
     @Before
@@ -45,7 +43,7 @@ public class FireBaseScoreListenerTest extends TestCase {
         super.setUp();
         quizResultActivity = PowerMockito.mock(QuizResultActivity.class);
         //exquestion = PowerMockito.mock(question.class);
-        playerScores = new ArrayList<userScore>();
+        playerScores = new ArrayList<UserScore>();
         data = new ArrayList<DataSnapshot>();
         firebaseScoreListener = new FirebaseScoreListener(playerScores, currentPlayer, quizResultActivity);
     }

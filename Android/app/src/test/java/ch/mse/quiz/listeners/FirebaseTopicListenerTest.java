@@ -23,16 +23,14 @@ public class FirebaseTopicListenerTest extends TestCase {
     private FirebaseTopicListener firebaseTopicListener;
     private NumberPicker numberPicker;
     private ArrayList<DataSnapshot> data;
-    private ArrayList<String> topics;
 
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        topics = new ArrayList<>();
         data = new ArrayList<>();
         numberPicker = PowerMockito.mock(NumberPicker.class);
-        firebaseTopicListener = new FirebaseTopicListener(topics, numberPicker);
+        firebaseTopicListener = new FirebaseTopicListener(numberPicker);
     }
 
     @Test
@@ -52,15 +50,15 @@ public class FirebaseTopicListenerTest extends TestCase {
         PowerMockito.when(dataSnapshot.getChildren()).thenReturn(data);
         firebaseTopicListener.onDataChange(dataSnapshot);
         // should contain elements
-        assertTrue(0 < topics.size());
+        assertTrue(0 < firebaseTopicListener.getTopics().size());
         //should contain 2 elements
-        assertTrue(2 == topics.size());
+        assertTrue(2 == firebaseTopicListener.getTopics().size());
     }
 
     @Test
     public void onCancelled() {
         ArrayList<String> topics = new ArrayList<>();
-        FirebaseTopicListener firebaseTopicListener = new FirebaseTopicListener(topics, numberPicker);
+        FirebaseTopicListener firebaseTopicListener = new FirebaseTopicListener(numberPicker);
         firebaseTopicListener.onCancelled(PowerMockito.mock(DatabaseError.class));
         assertTrue(true);
     }

@@ -5,15 +5,15 @@
 
 package ch.mse.quiz.models;
 
-public class userScore {
+public class UserScore {
     private String userName;
     private int score;
 
-    public userScore() {
+    public UserScore() {
 
     }
 
-    public userScore(String userName, int score) {
+    public UserScore(String userName, int score) {
         this.userName = userName;
         this.score = score;
     }
