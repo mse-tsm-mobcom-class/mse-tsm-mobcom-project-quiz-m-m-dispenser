@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class QuizResultActivityTest {
+public class QuizResultActivityTest extends UITestHelper {
 
     @Rule
     public ActivityTestRule<QuizResultActivity> mActivityTest = new ActivityTestRule<QuizResultActivity>(QuizResultActivity.class, false, false);

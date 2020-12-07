@@ -43,7 +43,7 @@ public class QuestionActivity extends AppCompatActivity {
     private int questionNumber;
     private String quizTopic;
     private int userScore;
-    public ArrayList<Question> questions = new ArrayList<Question>();
+    public ArrayList<Question> questions = new ArrayList<>();
     private final Handler handler = new Handler();
 
     private TextView tvTimer;
@@ -264,6 +264,9 @@ public class QuestionActivity extends AppCompatActivity {
 
     //create new question from list and set UI accordingly
     public void createQuestion(int i) {
+        if (0 == questions.size()) {
+            return;
+        }
         Log.d(LOG_TAG, "new question created!");
         tvProgress.setText("Topic " + quizTopic + " Question " + currentQuestion + " out of " + questionNumber);
         Question q = questions.get(i - 1);
