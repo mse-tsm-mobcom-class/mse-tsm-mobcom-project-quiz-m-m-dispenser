@@ -35,18 +35,12 @@ import ch.mse.quiz.runnables.TheftRunnable;
 
 public class MainActivity extends AppCompatActivity implements ToastPrinter {
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
-    private Button btnStartQuizButton;
-    private NumberPicker npNumberOfQuestions;
-    public NumberPicker npTopic;
+    private static final int LAUNCH_SECOND_ACTIVITY = 11;
     private final PermissionService permissionService = new PermissionService();
     private final BleGattCallback bleGattCallback = BleGattCallback.getInstance();
-
-    //Firebase
-    private FirebaseAuth mAuth;
-    static int LAUNCH_SECOND_ACTIVITY = 11;
-    public static final String USER_AUTH = "user_auth";
     //Getting Firebase Instance
-    public FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private NumberPicker npTopic;
     DatabaseReference dbRef;
 
     private Thread theftThread;
@@ -61,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
         setContentView(R.layout.activity_main);
         npTopic = findViewById(R.id.npQuestionTopic);
         // init firebase auth and get user
-        mAuth = FirebaseAuth.getInstance();
+        //Firebase
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         // if user is not logged in then redirect to login page
         if (currentUser == null) {
@@ -109,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
     }
 
     private void initQuiz() {
-        btnStartQuizButton = findViewById(R.id.button_startQuiz);
-        npNumberOfQuestions = findViewById(R.id.npQuestionNumber);
+        Button btnStartQuizButton = findViewById(R.id.button_startQuiz);
+        NumberPicker npNumberOfQuestions = findViewById(R.id.npQuestionNumber);
         Log.d(LOG_TAG, "start Quiz!");
         //how many questions to answer?
         npNumberOfQuestions.setMinValue(1);

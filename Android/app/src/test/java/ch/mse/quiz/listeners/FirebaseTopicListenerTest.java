@@ -52,12 +52,11 @@ public class FirebaseTopicListenerTest extends TestCase {
         // should contain elements
         assertTrue(0 < firebaseTopicListener.getTopics().size());
         //should contain 2 elements
-        assertTrue(2 == firebaseTopicListener.getTopics().size());
+        assertEquals(2, firebaseTopicListener.getTopics().size());
     }
 
     @Test
     public void onCancelled() {
-        ArrayList<String> topics = new ArrayList<>();
         FirebaseTopicListener firebaseTopicListener = new FirebaseTopicListener(numberPicker);
         firebaseTopicListener.onCancelled(PowerMockito.mock(DatabaseError.class));
         assertTrue(true);

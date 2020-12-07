@@ -7,8 +7,6 @@ package ch.mse.quiz;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -22,31 +20,21 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import ch.mse.quiz.listeners.FirebaseScoreListener;
+import ch.mse.quiz.listeners.StartQuizListener;
 import ch.mse.quiz.models.UserScore;
 
 public class QuizResultActivity extends AppCompatActivity {
-    private static final String LOG_TAG = QuizResultActivity.class.getSimpleName();
-    private TextView results;
-    private ListView leaderboard;
-    private Button restartQuiz;
-    private Button endQuiz;
-    //scores this round
-    private int userScore;
-    private int totalQuestions;
     private String quizTopic;
-    //leaderboard user scores
-    public ArrayList<UserScore> playerScores;
-    public UserScore currentPlayer;
-
     //firebase
     //Getting Firebase Instance
-    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    //leaderboard user scores
+    private List<UserScore> playerScores;
     DatabaseReference dbRef;
-    //auth of user
-    private FirebaseAuth mAuth;
-    public static final String USER_AUTH = "user_auth";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +45,17 @@ public class QuizResultActivity extends AppCompatActivity {
         //get results from this quiz round
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        userScore = extras.getInt(QuestionActivity.SCORE);
-        totalQuestions = extras.getInt(QuestionActivity.QUESTION_NUMBER);
-        quizTopic = extras.getString(QuestionActivity.QUIZ_TOPIC);
+        //scores this round
+        int userScore = extras.getInt(QuestionActivity.SCORE);
+        int totalQuestions = extras.getInt(StartQuizListener.QUESTION_NUMBER);
+        quizTopic = extras.getString(StartQuizListener.QUESTION_TOPIC);
 
         // init firebase auth and get user
-        mAuth = FirebaseAuth.getInstance();
+        //auth of user
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //set current user values
-        currentPlayer = new UserScore();
+        UserScore currentPlayer = new UserScore();
         currentPlayer.setUserName(currentUser.getEmail());
         currentPlayer.setUserScore(userScore);
 
@@ -73,62 +63,18 @@ public class QuizResultActivity extends AppCompatActivity {
         playerScores = new ArrayList<>();
         updateUserScores(currentPlayer);
 
-        results = findViewById(R.id.textView_results);
-        results.setText("Your score is " + userScore + " out of " + totalQuestions + " questions");
+        TextView results = findViewById(R.id.textView_results);
+        results.setText(String.format(Locale.GERMAN, "Your score is %d out of %d questions", userScore, totalQuestions));
 
-        restartQuiz = findViewById(R.id.button_restartQuiz);
-        restartQuiz.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(QuizResultActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        Button restartQuiz = findViewById(R.id.button_restartQuiz);
+        restartQuiz.setOnClickListener(v -> {
+            Intent intent1 = new Intent(QuizResultActivity.this, MainActivity.class);
+            startActivity(intent1);
+            finish();
         });
 
-        endQuiz = findViewById(R.id.button_endQuiz);
-        endQuiz.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(LOG_TAG, "onStart");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        Log.d(LOG_TAG, "onPause");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(LOG_TAG, "onResume");
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.d(LOG_TAG, "onRestart");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(LOG_TAG, "onStop");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(LOG_TAG, "onDestroy");
+        Button endQuiz = findViewById(R.id.button_endQuiz);
+        endQuiz.setOnClickListener(v -> finish());
     }
 
     private void updateUserScores(UserScore currentPlayer) {
@@ -140,7 +86,7 @@ public class QuizResultActivity extends AppCompatActivity {
     }
 
     public void updateList() {
-        bubbleSort(playerScores);
+        playerScores.sort((o1, o2) -> o1.getUserScore() - o2.getUserScore());
         //write to DB
         dbRef = database.getReference("Leaders_" + quizTopic);
         dbRef.setValue(playerScores);
@@ -159,25 +105,8 @@ public class QuizResultActivity extends AppCompatActivity {
             }
         }
 
-        ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.activity_listview, highscoreArray);
-        leaderboard = findViewById(R.id.listView_highScore);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.activity_listview, highscoreArray);
+        ListView leaderboard = findViewById(R.id.listView_highScore);
         leaderboard.setAdapter(adapter);
-    }
-
-    private void bubbleSort(ArrayList<UserScore> userScores) {
-        int n = userScores.size();
-        UserScore tempUser = new UserScore();
-
-        for (int i = n; i > 1; i--) {
-            for (int j = i - 1; j > 0; j--) {
-                //bubble up if score greater
-                if (userScores.get(j - 1).getUserScore() < userScores.get(j).getUserScore()) {
-                    tempUser = userScores.get(j - 1);
-                    userScores.set(j - 1, userScores.get(j));
-                    userScores.set(j, tempUser);
-                }
-
-            }
-        }
     }
 }

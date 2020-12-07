@@ -43,8 +43,8 @@ public class FirebaseQuestionListenerTest extends TestCase {
         super.setUp();
         questionActivity = PowerMockito.mock(QuestionActivity.class);
         //exquestion = PowerMockito.mock(question.class);
-        questions = new ArrayList<Question>();
-        data = new ArrayList<DataSnapshot>();
+        questions = new ArrayList<>();
+        data = new ArrayList<>();
         firebaseQuestionListener = new FirebaseQuestionListener(questions, questionNumber, questionActivity);
     }
 
@@ -67,7 +67,7 @@ public class FirebaseQuestionListenerTest extends TestCase {
         // should contain elements
         assertTrue(0 < questions.size());
         //should contain 2 elements
-        assertTrue(questions.size() == 2);
+        assertEquals(2, questions.size());
         //should call callback method
         verify(questionActivity).createQuestion(1);
     }

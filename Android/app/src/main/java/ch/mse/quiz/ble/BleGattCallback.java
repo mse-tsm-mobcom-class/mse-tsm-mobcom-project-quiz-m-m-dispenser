@@ -26,8 +26,8 @@ public class BleGattCallback extends BluetoothGattCallback {
     private final UUID mmDispenserDispenseCharacteristicUuid = UUID.fromString("113A0003-FD33-441B-9A57-E9F1C29633D3");
     private final UUID mmDispenserFillingLevelCharacteristicUuid = UUID.fromString("113A0004-FD33-441B-9A57-E9F1C29633D3");
     private final UUID clientCharacteristicConfigurationUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-    private final byte[] dispenseValueSend = {0x01};
-    private final byte[] dispenseValue = {0x00, 0x01};
+    private static final byte[] dispenseValueSend = {0x01};
+    private static final byte[] dispenseValue = {0x00, 0x01};
     private BluetoothGattCharacteristic mmDispenserStateCharacteristic = null;
     private BluetoothGattCharacteristic mmDispenserDispenseCharacteristic = null;
     private BluetoothGattCharacteristic mmDispenserFillingLevelCharacteristic = null;
@@ -38,7 +38,6 @@ public class BleGattCallback extends BluetoothGattCallback {
     private boolean isDispenserStateNotificationEnabled = false;
     private boolean isFillingLevelNotificationEnabled = false;
 
-    private final double dispenserHeightCm = 210;
     private boolean isLow = false;
     private boolean isTheft = false;
 
@@ -152,6 +151,7 @@ public class BleGattCallback extends BluetoothGattCallback {
     }
 
     public double getFillingLevelPercentage() {
+        double dispenserHeightCm = 210;
         double fillingLevelPercentage = (1 - (fillingLevel / dispenserHeightCm)) * 100;
         if (0 > fillingLevelPercentage) {
             fillingLevelPercentage = 0;

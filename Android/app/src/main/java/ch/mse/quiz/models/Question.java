@@ -6,7 +6,7 @@
 package ch.mse.quiz.models;
 
 public class Question {
-    private String question;
+    private String questionText;
     private int correctAnswer;
     private String answer1;
     private String answer2;
@@ -17,8 +17,8 @@ public class Question {
 
     }
 
-    public Question(String question, int correctAnswer, String answer1, String answer2, String answer3, String answer4) {
-        this.question = question;
+    public Question(String questionText, int correctAnswer, String answer1, String answer2, String answer3, String answer4) {
+        this.questionText = questionText;
         this.correctAnswer = correctAnswer;
         this.answer1 = answer1;
         this.answer2 = answer2;
@@ -30,8 +30,8 @@ public class Question {
         return correctAnswer;
     }
 
-    public String getQuestion() {
-        return question;
+    public String getQuestionText() {
+        return questionText;
     }
 
     public String getAnswer1() {

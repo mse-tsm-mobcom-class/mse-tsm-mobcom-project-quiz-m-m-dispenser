@@ -23,14 +23,13 @@ public class BleService {
 
     private static final long SCAN_PERIOD_MS = 10000;
 
-    private final String mmDispenserServiceUuid = "113A0001-FD33-441B-9A57-E9F1C29633D3";
-
     private final BluetoothLeScanner scanner;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final List<ScanFilter> filters = new ArrayList<>();
 
     public BleService(BluetoothLeScanner scanner) {
         this.scanner = scanner;
+        String mmDispenserServiceUuid = "113A0001-FD33-441B-9A57-E9F1C29633D3";
         ParcelUuid parcelUuid = ParcelUuid.fromString(mmDispenserServiceUuid);
         ScanFilter filter = new ScanFilter.Builder().setServiceUuid(parcelUuid).build();
         this.filters.add(filter);

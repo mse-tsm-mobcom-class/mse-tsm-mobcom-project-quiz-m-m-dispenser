@@ -22,7 +22,7 @@ public class QuestionTest extends TestCase {
     @Test
     public void getQuestion() {
         Question question = new Question("Test", 1, "Test 1", "Test 2", "Test 3", "Test 4");
-        assertEquals("Test", question.getQuestion());
+        assertEquals("Test", question.getQuestionText());
     }
 
     @Test
