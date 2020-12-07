@@ -61,6 +61,8 @@ public class BleGattCallback extends BluetoothGattCallback {
             this.isConnected = true;
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
             this.isConnected = false;
+            isFillingLevelNotificationEnabled = false;
+            isDispenserStateNotificationEnabled = false;
         }
     }
 
