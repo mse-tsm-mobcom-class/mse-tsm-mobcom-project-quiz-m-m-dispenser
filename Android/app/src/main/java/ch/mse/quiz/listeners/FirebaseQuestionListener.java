@@ -1,3 +1,8 @@
+// Copyright (c) 2020, Steiner Pascal, Strässle Nikolai, Radinger Martin
+// All rights reserved.
+
+// Licensed under LICENSE, see LICENSE file
+
 package ch.mse.quiz.listeners;
 
 import android.util.Log;
@@ -49,7 +54,6 @@ public class FirebaseQuestionListener implements ValueEventListener {
     public void onCancelled(@NonNull DatabaseError databaseError) {
         Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage());
     }
-
 
     private ArrayList<Question> getRandomQuestions(ArrayList<Question> questions, int questionNumber) {
         ArrayList<Question> randomList = new ArrayList<>();

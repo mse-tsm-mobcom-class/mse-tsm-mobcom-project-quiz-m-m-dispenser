@@ -143,7 +143,6 @@ public class QuestionActivity extends AppCompatActivity {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference dbRef;
 
-    //TODO: read random questions from FirebaseDB
     public void getQuestions() {
         dbRef = database.getReference("topics/" + quizTopic + "/questions");
 
@@ -173,7 +172,6 @@ public class QuestionActivity extends AppCompatActivity {
         //stopTimer
         countDownTimer.cancel();
         countDownTimer = null;
-
     }
 
     @Override
