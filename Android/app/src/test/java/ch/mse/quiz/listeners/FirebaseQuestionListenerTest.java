@@ -95,7 +95,7 @@ public class FirebaseQuestionListenerTest extends TestCase {
             ArrayList<Question> arrList = (ArrayList<Question>) privateMethod.invoke(firebaseQuestionListener,questions,questionNumber);
 
             //should return a questionNumber size array
-            assertTrue(arrList.size() == questionNumber);
+            assertEquals(arrList.size(), questionNumber);
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
