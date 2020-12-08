@@ -42,12 +42,10 @@ public class StartQuizListener implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        /*
         if (!bleGattCallback.isConnected()) {
             toastPrinter.print(activity.getString(R.string.toastNoDispenserConnected));
             return;
         }
-        */
         Log.d(LOG_TAG, "start Quiz!");
 
         int choice = npTopic.getValue();
