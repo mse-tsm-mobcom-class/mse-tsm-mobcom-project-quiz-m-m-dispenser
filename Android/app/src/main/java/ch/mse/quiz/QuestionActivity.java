@@ -41,7 +41,7 @@ public class QuestionActivity extends AppCompatActivity {
     private int questionNumber;
     private String quizTopic;
     private int userScore;
-    private final List<Question> questions = new ArrayList<>();
+    public ArrayList<Question> questions = new ArrayList<>();
     private final Handler handler = new Handler();
 
     private TextView tvTimer;
