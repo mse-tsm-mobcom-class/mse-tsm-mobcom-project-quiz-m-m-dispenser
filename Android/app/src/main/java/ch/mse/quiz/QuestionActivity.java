@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import ch.mse.quiz.ble.BleGattCallback;
@@ -32,9 +32,7 @@ import nl.dionsegijn.konfetti.models.Shape;
 import nl.dionsegijn.konfetti.models.Size;
 
 public class QuestionActivity extends AppCompatActivity {
-    public static final String QUESTION_NUMBER = "ch.mse.quiz.extra.NUMBER";
     public static final String SCORE = "ch.mse.quiz.extra.SCORE";
-    public static final String QUIZ_TOPIC = "ch.mse.quiz.extra.QUIZ_TOPIC";
     private static final String LOG_TAG = QuestionActivity.class.getSimpleName();
     private CountDownTimer countDownTimer;
     private long remainingTime;
@@ -43,7 +41,7 @@ public class QuestionActivity extends AppCompatActivity {
     private int questionNumber;
     private String quizTopic;
     private int userScore;
-    public ArrayList<Question> questions = new ArrayList<Question>();
+    private final List<Question> questions = new ArrayList<>();
     private final Handler handler = new Handler();
 
     private TextView tvTimer;
@@ -59,31 +57,22 @@ public class QuestionActivity extends AppCompatActivity {
 
     //BLE
     private final BleGattCallback bleGattCallback = BleGattCallback.getInstance();
-
-
-    private final Runnable newQuestion = new Runnable() {
-        @Override
-        public void run() {
-            createQuestion(currentQuestion);
-            tvProgress.setText("Topic " + quizTopic + " Question " + currentQuestion + " out of " + questionNumber);
-            resetButtonColor();
-            startTimer(30000);
-        }
+    private final Runnable showResultActivity = () -> {
+        Log.d(LOG_TAG, "display QuizResultActivity!");
+        Bundle extras = new Bundle();
+        extras.putInt(StartQuizListener.QUESTION_NUMBER, questionNumber);
+        extras.putInt(SCORE, userScore);
+        extras.putString(StartQuizListener.QUESTION_TOPIC, quizTopic);
+        Intent intent = new Intent(QuestionActivity.this, QuizResultActivity.class);
+        intent.putExtras(extras);
+        startActivity(intent);
+        finish();
     };
-
-    private final Runnable showResultActivity = new Runnable() {
-        @Override
-        public void run() {
-            Log.d(LOG_TAG, "display QuizResultActivity!");
-            Bundle extras = new Bundle();
-            extras.putInt(QUESTION_NUMBER, questionNumber);
-            extras.putInt(SCORE, userScore);
-            extras.putString(QUIZ_TOPIC, quizTopic);
-            Intent intent = new Intent(QuestionActivity.this, QuizResultActivity.class);
-            intent.putExtras(extras);
-            startActivity(intent);
-            finish();
-        }
+    private final Runnable newQuestion = () -> {
+        createQuestion(currentQuestion);
+        tvProgress.setText(String.format(Locale.GERMAN, "Topic %s Question %d out of %d", quizTopic, currentQuestion, questionNumber));
+        resetButtonColor();
+        startTimer(30000);
     };
     private TextView tvFillingLevel;
     private Thread fillingLevelThread;
@@ -94,6 +83,15 @@ public class QuestionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
+        //how many questions to do? get data from MainActivity calling
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        questionNumber = extras.getInt(StartQuizListener.QUESTION_NUMBER);
+        quizTopic = extras.getString(StartQuizListener.QUESTION_TOPIC);
+
+        //read required amount of questions from DB
+        getQuestions();
 
         konfettiView = findViewById(R.id.viewKonfetti);
         tvProgress = findViewById(R.id.textView_questionProgress);
@@ -111,64 +109,45 @@ public class QuestionActivity extends AppCompatActivity {
         userScore = 0;
         remainingTime = 30000;
 
-        //how many questions to do? get data from MainActivity calling
-        Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        questionNumber = extras.getInt(StartQuizListener.QUESTION_NUMBER);
-        quizTopic = extras.getString(StartQuizListener.QUESTION_TOPIC);
-
-        //read required amount of questions from DB
-        getQuestions();
-
         //filling level from sensor
         initFillingLevelThread();
         dispenseCandy();
 
         //Button Listeners
-        buttonAnswerA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submit(1);
-                Log.d(LOG_TAG, "checkAnswerA");
-            }
+        buttonAnswerA.setOnClickListener(v -> {
+            submit(1);
+            Log.d(LOG_TAG, "checkAnswerA");
         });
 
-        buttonAnswerB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submit(2);
-                Log.d(LOG_TAG, "checkAnswerB");
-            }
+        buttonAnswerB.setOnClickListener(v -> {
+            submit(2);
+            Log.d(LOG_TAG, "checkAnswerB");
         });
 
-        buttonAnswerC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submit(3);
-                Log.d(LOG_TAG, "checkAnswerC");
-            }
+        buttonAnswerC.setOnClickListener(v -> {
+            submit(3);
+            Log.d(LOG_TAG, "checkAnswerC");
         });
 
-        buttonAnswerD.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                submit(4);
-                Log.d(LOG_TAG, "checkAnswerD");
-            }
+        buttonAnswerD.setOnClickListener(v -> {
+            submit(4);
+            Log.d(LOG_TAG, "checkAnswerD");
         });
 
         Log.d(LOG_TAG, "-----");
         Log.d(LOG_TAG, "on create");
     }
+
     //firebase
     //Getting Firebase Instance
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference dbRef;
+
     //TODO: read random questions from FirebaseDB
     public void getQuestions() {
         dbRef = database.getReference("topics/" + quizTopic + "/questions");
 
-        dbRef.addListenerForSingleValueEvent(new FirebaseQuestionListener(questions,questionNumber,this));
+        dbRef.addListenerForSingleValueEvent(new FirebaseQuestionListener(questions, questionNumber, this));
     }
 
     @Override
@@ -207,25 +186,6 @@ public class QuestionActivity extends AppCompatActivity {
         }
     }
 
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        Log.d(LOG_TAG, "onRestart");
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(LOG_TAG, "onStop");
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d(LOG_TAG, "onDestroy");
-    }
-
     //BLE
     private void dispenseCandy() {
         dispenseStatusThread = new Thread(() -> {
@@ -233,11 +193,11 @@ public class QuestionActivity extends AppCompatActivity {
                 try {
                     Thread.sleep(100);
                     runOnUiThread(() -> {
-                        String dispenseStatus = "";
+                        String dispenseStatus;
                         if (bleGattCallback.isDispenserState()) {
-                            dispenseStatus = "grab your m&m";
+                            dispenseStatus = getString(R.string.grapMnM);
                         } else {
-                            dispenseStatus = "nothing to take";
+                            dispenseStatus = getString(R.string.nothingToTake);
                         }
                         tvDispenserState.setText(dispenseStatus);
                     });
@@ -264,10 +224,13 @@ public class QuestionActivity extends AppCompatActivity {
 
     //create new question from list and set UI accordingly
     public void createQuestion(int i) {
+        if (questions.isEmpty()) {
+            return;
+        }
         Log.d(LOG_TAG, "new question created!");
-        tvProgress.setText("Topic " + quizTopic + " Question " + currentQuestion + " out of " + questionNumber);
+        tvProgress.setText(String.format(Locale.GERMAN, "Topic %s Question %d out of %d", quizTopic, currentQuestion, questionNumber));
         Question q = questions.get(i - 1);
-        tvQuestion.setText(q.getQuestion());
+        tvQuestion.setText(q.getQuestionText());
 
         buttonAnswerA.setText(q.getAnswer1());
         buttonAnswerB.setText(q.getAnswer2());
@@ -290,7 +253,7 @@ public class QuestionActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                tvTimer.setText("time is up!");
+                tvTimer.setText(getString(R.string.timerIsUp));
                 endQuestion();
             }
         }.start();
@@ -306,7 +269,7 @@ public class QuestionActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "User out of time, end question!");
 
         currentQuestion = currentQuestion + 1;
-        Toast.makeText(getBaseContext(), "Time is up!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getBaseContext(), getString(R.string.timerIsUp), Toast.LENGTH_SHORT).show();
         setButtonColor();
 
         //more questions? then create new one
@@ -320,10 +283,10 @@ public class QuestionActivity extends AppCompatActivity {
 
     //UI changers
     private void resetButtonColor() {
-        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.secondaryColor));
-        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.secondaryColor));
-        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.secondaryColor));
-        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.secondaryColor));
+        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.secondaryColor, getTheme()));
+        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.secondaryColor, getTheme()));
+        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.secondaryColor, getTheme()));
+        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.secondaryColor, getTheme()));
     }
 
     private void setButtonColor() {
@@ -331,31 +294,31 @@ public class QuestionActivity extends AppCompatActivity {
             if (i == correctAnswer) {
                 switch (i) {
                     case 1:
-                        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.green));
+                        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.green, getTheme()));
                         break;
                     case 2:
-                        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.green));
+                        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.green, getTheme()));
                         break;
                     case 3:
-                        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.green));
+                        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.green, getTheme()));
                         break;
-                    case 4:
-                        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.green));
+                    default:
+                        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.green, getTheme()));
                         break;
                 }
             } else {
                 switch (i) {
                     case 1:
-                        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.red));
+                        buttonAnswerA.setBackgroundColor(getResources().getColor(R.color.red, getTheme()));
                         break;
                     case 2:
-                        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.red));
+                        buttonAnswerB.setBackgroundColor(getResources().getColor(R.color.red, getTheme()));
                         break;
                     case 3:
-                        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.red));
+                        buttonAnswerC.setBackgroundColor(getResources().getColor(R.color.red, getTheme()));
                         break;
-                    case 4:
-                        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.red));
+                    default:
+                        buttonAnswerD.setBackgroundColor(getResources().getColor(R.color.red, getTheme()));
                         break;
                 }
             }
@@ -404,4 +367,7 @@ public class QuestionActivity extends AppCompatActivity {
         }
     }
 
+    public int getCorrectAnswer() {
+        return correctAnswer;
+    }
 }

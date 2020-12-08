@@ -6,7 +6,6 @@
 package ch.mse.quiz;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
@@ -19,20 +18,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+import ch.mse.quiz.listeners.StartQuizListener;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.ComponentNameMatchers.hasClassName;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.Matchers.allOf;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class QuestionActivityTest {
+public class QuestionActivityTest extends UITestHelper {
     @Rule
     public ActivityTestRule<QuestionActivity> mActivityTest = new ActivityTestRule<QuestionActivity>(QuestionActivity.class, false, false);
 
@@ -54,10 +52,8 @@ public class QuestionActivityTest {
     @Test
     public void test_isActivityInView() {
         Intent i = new Intent();
-        Bundle extras = new Bundle();
-        extras.putInt(QuestionActivity.QUESTION_NUMBER, 5);
-        extras.putString(QuestionActivity.QUIZ_TOPIC, "history");
-        i.putExtras(extras);
+        i.putExtra(StartQuizListener.QUESTION_NUMBER, 1);
+        i.putExtra(StartQuizListener.QUESTION_TOPIC, "history");
         mActivityTest.launchActivity(i);
 
         onView(withId(R.id.textView_questionProgress)).check(matches(isDisplayed()));
@@ -66,15 +62,23 @@ public class QuestionActivityTest {
     @Test
     public void test_quizResultActivityIntent() {
         Intent i = new Intent();
-        Bundle extras = new Bundle();
-        extras.putInt(QuestionActivity.QUESTION_NUMBER, 1);
-        extras.putString(QuestionActivity.QUIZ_TOPIC, "history");
-        i.putExtras(extras);
+        i.putExtra(StartQuizListener.QUESTION_NUMBER, 1);
+        i.putExtra(StartQuizListener.QUESTION_TOPIC, "history");
         mActivityTest.launchActivity(i);
 
-        onView(withId(R.id.textView_answerA)).perform(click());
-        intended(allOf(
-                hasComponent(QuizResultActivity.class.getName())
-        ));
+        int correctAnswerButtonId = R.id.textView_answerA;
+        if (2 == mActivityTest.getActivity().getCorrectAnswer()) {
+            correctAnswerButtonId = R.id.textView_answerB;
+        } else if (3 == mActivityTest.getActivity().getCorrectAnswer()) {
+            correctAnswerButtonId = R.id.textView_answerC;
+        } else if (4 == mActivityTest.getActivity().getCorrectAnswer()) {
+            correctAnswerButtonId = R.id.textView_answerD;
+
+        }
+
+        onView(withId(correctAnswerButtonId)).perform(click());
+        intended(
+                hasComponent(hasClassName(QuizResultActivity.class.getName()))
+        );
     }
 }

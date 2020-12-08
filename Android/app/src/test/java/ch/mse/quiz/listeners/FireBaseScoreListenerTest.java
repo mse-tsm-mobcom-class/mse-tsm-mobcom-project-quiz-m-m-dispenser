@@ -43,8 +43,8 @@ public class FireBaseScoreListenerTest extends TestCase {
         super.setUp();
         quizResultActivity = PowerMockito.mock(QuizResultActivity.class);
         //exquestion = PowerMockito.mock(question.class);
-        playerScores = new ArrayList<UserScore>();
-        data = new ArrayList<DataSnapshot>();
+        playerScores = new ArrayList<>();
+        data = new ArrayList<>();
         firebaseScoreListener = new FirebaseScoreListener(playerScores, currentPlayer, quizResultActivity);
     }
 
@@ -67,7 +67,7 @@ public class FireBaseScoreListenerTest extends TestCase {
         // should contain elements
         assertTrue(0 < playerScores.size());
         //should contain 2 elements
-        assertTrue(playerScores.size() == 3);
+        assertEquals(3, playerScores.size());
         //should call callback method
         verify(quizResultActivity).updateList();
     }

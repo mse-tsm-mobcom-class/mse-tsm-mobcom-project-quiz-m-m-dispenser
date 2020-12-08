@@ -6,6 +6,8 @@ import android.content.pm.PackageManager;
 
 import androidx.core.app.ActivityCompat;
 
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
 public class PermissionService {
 
     private Activity currentActivity;
@@ -24,14 +26,13 @@ public class PermissionService {
      * @return boolean
      */
     public boolean hasRequiredPermissions() {
-        return hasPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+        return hasPermission();
     }
 
     /**
-     * @param permission {@link String}
      * @return boolean
      */
-    private boolean hasPermission(String permission) {
-        return ActivityCompat.checkSelfPermission(this.currentActivity, permission) == PackageManager.PERMISSION_GRANTED;
+    private boolean hasPermission() {
+        return checkSelfPermission(this.currentActivity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 }

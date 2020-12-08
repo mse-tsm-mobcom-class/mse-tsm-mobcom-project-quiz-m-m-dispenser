@@ -13,16 +13,11 @@ import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.util.Patterns
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ch.mse.quiz.R
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import org.w3c.dom.Text
 
 
 class FirebaseLogin : AppCompatActivity() {
@@ -42,7 +37,7 @@ class FirebaseLogin : AppCompatActivity() {
     private fun validateForm(): Boolean {
         var valid = true
 
-        val email = findViewById<TextInputEditText>(R.id.fieldEmail);
+        val email = findViewById<TextInputEditText>(R.id.fieldEmail)
         if (TextUtils.isEmpty(email.text) || (email.text.toString() == "required")) {
             email.setText("required")
 
@@ -53,7 +48,7 @@ class FirebaseLogin : AppCompatActivity() {
             valid = false
         }
 
-        val password = findViewById<TextInputEditText>(R.id.fieldPassword);
+        val password = findViewById<TextInputEditText>(R.id.fieldPassword)
         if (TextUtils.isEmpty(password.text) || (password.text.toString() == "required")) {
             password.setText("required")
             password.transformationMethod = PasswordTransformationMethod.getInstance()

@@ -7,7 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.NumberPicker;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import ch.mse.quiz.QuestionActivity;
 import ch.mse.quiz.R;
@@ -21,12 +21,12 @@ public class StartQuizListener implements View.OnClickListener {
     private final Activity activity;
     private final ToastPrinter toastPrinter;
     private final BleGattCallback bleGattCallback;
-    private final String LOG_TAG = StartQuizListener.class.getCanonicalName();
+    private static final String LOG_TAG = StartQuizListener.class.getCanonicalName();
     private final NumberPicker npTopic;
     private final NumberPicker npNumberOfQuestions;
-    private final ArrayList<String> topicList;
+    private final List<String> topicList;
 
-    public StartQuizListener(Activity activity, ToastPrinter toastPrinter, BleGattCallback bleGattCallback, NumberPicker npTopic, NumberPicker npNumberOfQuestions, ArrayList<String> topicList) {
+    public StartQuizListener(Activity activity, ToastPrinter toastPrinter, BleGattCallback bleGattCallback, NumberPicker npTopic, NumberPicker npNumberOfQuestions, List<String> topicList) {
         this.activity = activity;
         this.toastPrinter = toastPrinter;
         this.bleGattCallback = bleGattCallback;

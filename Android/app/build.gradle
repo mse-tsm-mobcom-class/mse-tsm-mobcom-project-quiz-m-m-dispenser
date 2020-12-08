@@ -31,6 +31,14 @@ android {
         }
         debug {
             testCoverageEnabled = true
+            def fireFile = rootProject.file("firebase.properties")
+            def fireProperties = new Properties()
+            fireProperties.load(new FileInputStream(fireFile))
+
+            buildConfigField "String", "applicationId", fireProperties['applicationId']
+            buildConfigField "String", "apiKey", fireProperties['apiKey']
+            buildConfigField "String", "projectId", fireProperties['projectId']
+            buildConfigField "String", "databaseUrl", fireProperties['databaseUrl']
         }
     }
     compileOptions {
@@ -76,7 +84,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-intents:3.0.2'
     androidTestImplementation 'com.android.support.test:rules:1.0.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'org.robolectric:robolectric:4.4'
+    //androidTestImplementation 'org.robolectric:robolectric:4.4'
     //androidTestImplementation 'org.powermock:powermock-core:2.0.9'
     //androidTestImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     //androidTestImplementation 'org.powermock:powermock-module-junit4-rule:2.0.9'

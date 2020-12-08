@@ -51,4 +51,7 @@
     <string name="toastNoDispenserConnected">No dispenser connected</string>
     <string name="toastAuthFailed">Authentication failed.</string>
     <string name="toastLoggedIn">\"Logged in as: \"</string>
+    <string name="timerIsUp">time is up!</string>
+    <string name="grapMnM"><![CDATA[grab your m&m]]></string>
+    <string name="nothingToTake">nothing to take</string>
 </resources>

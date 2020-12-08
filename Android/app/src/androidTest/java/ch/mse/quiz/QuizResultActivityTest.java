@@ -20,9 +20,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import ch.mse.quiz.listeners.StartQuizListener;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.PositionAssertions.isRightOf;
+import static androidx.test.espresso.assertion.PositionAssertions.isCompletelyRightOf;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
@@ -32,7 +34,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class QuizResultActivityTest {
+public class QuizResultActivityTest extends UITestHelper {
 
     @Rule
     public ActivityTestRule<QuizResultActivity> mActivityTest = new ActivityTestRule<QuizResultActivity>(QuizResultActivity.class, false, false);
@@ -54,15 +56,13 @@ public class QuizResultActivityTest {
     @Test
     public void ensureRightOf() {
         Intent i = new Intent();
-        Bundle extras = new Bundle();
-        extras.putInt(QuestionActivity.SCORE, 3);
-        extras.putInt(QuestionActivity.QUESTION_NUMBER, 5);
-        extras.putString(QuestionActivity.QUIZ_TOPIC, "sports");
-        i.putExtras(extras);
+        i.putExtra(QuestionActivity.SCORE, 3);
+        i.putExtra(StartQuizListener.QUESTION_NUMBER, 5);
+        i.putExtra(StartQuizListener.QUESTION_TOPIC, "sports");
 
         mActivityTest.launchActivity(i);
 
-        onView(ViewMatchers.withId(R.id.button_endQuiz)).check(isRightOf(withId(R.id.button_restartQuiz)));
+        onView(ViewMatchers.withId(R.id.button_endQuiz)).check(isCompletelyRightOf(withId(R.id.button_restartQuiz)));
     }
 
     //successful activity launch
@@ -71,8 +71,8 @@ public class QuizResultActivityTest {
         Intent i = new Intent();
         Bundle extras = new Bundle();
         extras.putInt(QuestionActivity.SCORE, 3);
-        extras.putInt(QuestionActivity.QUESTION_NUMBER, 5);
-        extras.putString(QuestionActivity.QUIZ_TOPIC, "sports");
+        extras.putInt(StartQuizListener.QUESTION_NUMBER, 5);
+        extras.putString(StartQuizListener.QUESTION_TOPIC, "sports");
         i.putExtras(extras);
 
         mActivityTest.launchActivity(i);
@@ -86,8 +86,8 @@ public class QuizResultActivityTest {
         Intent i = new Intent();
         Bundle extras = new Bundle();
         extras.putInt(QuestionActivity.SCORE, 3);
-        extras.putInt(QuestionActivity.QUESTION_NUMBER, 5);
-        extras.putString(QuestionActivity.QUIZ_TOPIC, "sports");
+        extras.putInt(StartQuizListener.QUESTION_NUMBER, 5);
+        extras.putString(StartQuizListener.QUESTION_TOPIC, "sports");
         i.putExtras(extras);
 
         mActivityTest.launchActivity(i);
@@ -104,8 +104,8 @@ public class QuizResultActivityTest {
         Intent i = new Intent();
         Bundle extras = new Bundle();
         extras.putInt(QuestionActivity.SCORE, 3);
-        extras.putInt(QuestionActivity.QUESTION_NUMBER, 5);
-        extras.putString(QuestionActivity.QUIZ_TOPIC, "sports");
+        extras.putInt(StartQuizListener.QUESTION_NUMBER, 5);
+        extras.putString(StartQuizListener.QUESTION_TOPIC, "sports");
         i.putExtras(extras);
 
         mActivityTest.launchActivity(i);

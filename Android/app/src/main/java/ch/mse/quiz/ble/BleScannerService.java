@@ -26,7 +26,7 @@ public class BleScannerService {
     private final PermissionService permissionService;
     private final PackageManager packageManager;
     private final BleGattCallback bleGattCallback;
-    private final String LOG_TAG = BleScannerService.class.getCanonicalName();
+    private static final String LOG_TAG = BleScannerService.class.getCanonicalName();
     private BluetoothDevice device;
     private BluetoothGatt deviceGatt;
 
