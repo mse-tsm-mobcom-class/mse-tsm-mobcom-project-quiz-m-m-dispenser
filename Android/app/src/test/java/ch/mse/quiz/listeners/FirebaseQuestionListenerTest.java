@@ -1,6 +1,7 @@
 package ch.mse.quiz.listeners;
 
 import android.os.Build;
+import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -15,6 +16,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import ch.mse.quiz.QuestionActivity;
@@ -27,7 +30,7 @@ import static org.mockito.Mockito.verify;
 @Config(sdk = {Build.VERSION_CODES.O_MR1})
 public class FirebaseQuestionListenerTest extends TestCase {
 
-    private FirebaseQuestionListener firebaseQuestionListener;
+    public FirebaseQuestionListener firebaseQuestionListener;
     int questionNumber = 1;
     ArrayList<Question> questions;
     ArrayList<DataSnapshot> data;
@@ -76,5 +79,53 @@ public class FirebaseQuestionListenerTest extends TestCase {
     public void onCancelled() {
         firebaseQuestionListener.onCancelled(PowerMockito.mock(DatabaseError.class));
         assertTrue(true);
+    }
+
+    @Test
+    public void testGetRandomQuestions() {
+        // init parameters
+        questionNumber = 4;
+        for(int i = 0; i <=10 ; i++) {
+            questions.add(PowerMockito.mock(Question.class));
+        }
+        // take private method and make accessible for the test
+        try {
+            Method privateMethod = firebaseQuestionListener.getClass().getDeclaredMethod("getRandomQuestions", ArrayList.class,int.class);
+            privateMethod.setAccessible(true);
+            ArrayList<Question> arrList = (ArrayList<Question>) privateMethod.invoke(firebaseQuestionListener,questions,questionNumber);
+
+            //should return a questionNumber size array
+            assertTrue(arrList.size() == questionNumber);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            Log.e("Private testmethod not found","exceptions"+e);
+        } catch (IllegalAccessException | InvocationTargetException e){
+            e.printStackTrace();
+            Log.e("Can not access private method","exceptions"+e);
+        }
+    }
+
+    @Test
+    public void getRandomNumber() {
+        int lowerbound = 0;
+        int upperbound = 10;
+        try {
+            Method privateMethod = firebaseQuestionListener.getClass().getDeclaredMethod("getRandomNumber", int.class, int.class);
+            privateMethod.setAccessible(true);
+            int rndNumber = (int) privateMethod.invoke(firebaseQuestionListener,lowerbound,upperbound);
+
+            //should return a questionNumber size array
+            assertTrue(rndNumber <= upperbound );
+            assertTrue(rndNumber >= lowerbound);
+
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            Log.e("Private testmethod not found","exceptions"+e);
+        } catch (IllegalAccessException | InvocationTargetException e){
+            e.printStackTrace();
+            Log.e("Can not access private method","exceptions"+e);
+        }
+
     }
 }

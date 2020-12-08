@@ -9,6 +9,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import ch.mse.quiz.QuestionActivity;
 import ch.mse.quiz.models.Question;
@@ -17,7 +18,7 @@ import static android.content.ContentValues.TAG;
 
 public class FirebaseQuestionListener implements ValueEventListener {
 
-    private final ArrayList<Question> questions;
+    private ArrayList<Question> questions;
     private int questionNumber;
     private final QuestionActivity questionActivity;
 
@@ -39,6 +40,7 @@ public class FirebaseQuestionListener implements ValueEventListener {
             questionNumber = questionnr;
             //Toast.makeText(getBaseContext(), "Nr. of question adjusted. Only " + questionnr + " questions available.", Toast.LENGTH_SHORT).show();
         }
+        questionActivity.questions = getRandomQuestions(questions, questionNumber);
         //set first question UI
         questionActivity.createQuestion(1);
     }
@@ -47,4 +49,34 @@ public class FirebaseQuestionListener implements ValueEventListener {
     public void onCancelled(@NonNull DatabaseError databaseError) {
         Log.e(TAG, "onCancelled: Something went wrong! Error:" + databaseError.getMessage());
     }
+
+
+    private ArrayList<Question> getRandomQuestions(ArrayList<Question> questions, int questionNumber) {
+        ArrayList<Question> randomList = new ArrayList<>();
+        int pointer = 0;
+        boolean flag = true;
+        for (int i = 0; i < questionNumber; i++) {
+            // check if question is already chosen
+            while (flag) {
+                //get random number for the questios list
+                pointer = getRandomNumber(0,questions.size() - 1);
+                if (!randomList.contains(questions.get(pointer))) {
+                    flag = false;
+                }
+            }
+            randomList.add(questions.get(pointer));
+            flag = true;
+        }
+        return randomList;
+    }
+
+    private int getRandomNumber(int lowerbound, int higherbound) {
+        Random r = new Random();
+        int low = lowerbound;
+        int high = higherbound;
+        int result = r.nextInt(high - low) + low;
+        return result;
+    }
+
+
 }

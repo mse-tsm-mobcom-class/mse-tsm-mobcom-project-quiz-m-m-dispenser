@@ -33,6 +33,7 @@ public class FirebaseTopicListener implements ValueEventListener {
         npTopic.setMinValue(1);
         npTopic.setMaxValue(topics.size());
         npTopic.setDisplayedValues(topicSelection);
+        npTopic.setWrapSelectorWheel(false);
     }
 
     @Override
