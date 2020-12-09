@@ -56,7 +56,7 @@ The images we used are all under free license.
 
 #### Screenshots
 ![Bild screenshot_20201207-16ujzq.jpg auf abload.de](https://abload.de/img/screenshot_20201207-16ujzq.jpg)
-![Bild screenshot_20201207-1fsjbv.jpg auf abload.de](https://abload.de/thumb/screenshot_20201207-1fsjbv.jpg)
+![Bild screenshot_20201207-1fsjbv.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1fsjbv.jpg)
 ![Bild screenshot_20201207-1jpjww.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1jpjww.jpg)
 ![Bild screenshot_20201207-1s1kgr.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1s1kgr.jpg)
 
