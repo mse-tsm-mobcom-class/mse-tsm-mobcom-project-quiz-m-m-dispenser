@@ -55,10 +55,10 @@ The images we used are all under free license.
 - [Icon](https://pixabay.com/de/illustrations/quiz-icon-test-q-u-ich-z-rot-2058888/)
 
 #### Screenshots
-[![Bild screenshot_20201207-1ywk07.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1ywk07.jpg)](https://abload.de/image.php?img=screenshot_20201207-1ywk07.jpg)
-[![Bild screenshot_20201207-1ywk07.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1ywk07.jpg)](https://abload.de/image.php?img=screenshot_20201207-1ywk07.jpg)
-[![Bild screenshot_20201207-1ywk07.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1ywk07.jpg)](https://abload.de/image.php?img=screenshot_20201207-1ywk07.jpg)
-[![Bild screenshot_20201207-1ywk07.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1ywk07.jpg)](https://abload.de/image.php?img=screenshot_20201207-1ywk07.jpg)
+![Bild screenshot_20201207-16ujzq.jpg auf abload.de](https://abload.de/img/screenshot_20201207-16ujzq.jpg)
+![Bild screenshot_20201207-1fsjbv.jpg auf abload.de](https://abload.de/thumb/screenshot_20201207-1fsjbv.jpg)
+![Bild screenshot_20201207-1jpjww.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1jpjww.jpg)
+![Bild screenshot_20201207-1s1kgr.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1s1kgr.jpg)
 
 #### Video of prototype
 You can see the prototype in action in our project video [here](Docs/MnMDispenserDemo.mov).
