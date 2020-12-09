@@ -20,7 +20,20 @@
 
 ### Android App
 
-The Android App consists of 3 activities. The main activity where the player can select the topic and number of questions he wants to answer, the quiz activity itself and the result activity where the quiz result is displayed with the leaderboard for the selected topic.
+#### Prerequisites
+* Android smartphone with BLE, API Level 26+ 
+* Java Version VERSION_1_8
+* Gradle 
+
+#### Building the app
+* Android Studio > Build > Make Project
+
+#### Running the app
+* Connect smartphone via USB
+* Android Studio > Run > Run 'app'
+
+#### Description
+The Android App consists of 3 activities. The main activity where the player can select the topic and number of questions he wants to answer, the quiz activity itself and the result activity where the quiz result is displayed with the leaderboard for the selected topic. There is also a login activity to connect the user to the firebase DB backend to load the questions, topic and save the user score.
 
 After logging in or creating an account, the user selects the topic and questions for this quiz round. The quiz can only start, when the app has successfully connected to the Candy dispenser via BLE connection, otherwise a toast appears so the user needs a connection first. The topics are pulled from the Firebase DB.
 
@@ -28,30 +41,34 @@ Upon creation the Quiz Activity creates the number of questions for the chosen t
 
 When finishing the quiz the result activity shows the top5 players with their correct answers and the individual player result. It is possible to appear more than once in the leaderboard as it shows the top5 players overall. The player then has the option to play another round of the quiz or quit the game.
 
-
 #### Feedback from candy dispenser
 The candy dispenser gives feedback to the player.
 - Filling level: there is a % showing the current filling level in the candy machine.
 - Correct answer: when giving the correct answer the app changes the text that there is some dispensed candy in the machine.
-- Theft attempt: when someone tries to open the candy storage a toast appears in the app warning the user that someone is trying to steal some sweets.
 
 #### UI
 For the User Interface (UI) we tried to apply the principles from the [material.io](https://material.io/design) guidelines and chose the colour scheme accordingly. 
 The images we used are all under free license.
+- [Login Image](https://pixabay.com/de/photos/m-m-s-s%C3%BC%C3%9Figkeiten-lustig-spa%C3%9F-2629323/)
 - [Quiz logo](https://pixabay.com/de/illustrations/quiz-fliesen-buchstaben-rot-spiel-2058883/)
 - [Leaderboard logo](https://commons.wikimedia.org/wiki/File:Topeka-leaderboard_cropped.png)
 - [Icon](https://pixabay.com/de/illustrations/quiz-icon-test-q-u-ich-z-rot-2058888/)
 
 #### Screenshots
-![Bild screenshot_20201204-mwk5t.jpeg auf abload.de](https://abload.de/img/screenshot_20201204-mwk5t.jpeg)
-![Bild screenshot_20201204-fpkur.jpeg auf abload.de](https://abload.de/img/screenshot_20201204-fpkur.jpeg)
-![Bild screenshot_20201204-qukmb.jpeg auf abload.de](https://abload.de/img/screenshot_20201204-qukmb.jpeg)
+[![Bild screenshot_20201207-1ywk07.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1ywk07.jpg)](https://abload.de/image.php?img=screenshot_20201207-1ywk07.jpg)
+[![Bild screenshot_20201207-1ywk07.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1ywk07.jpg)](https://abload.de/image.php?img=screenshot_20201207-1ywk07.jpg)
+[![Bild screenshot_20201207-1ywk07.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1ywk07.jpg)](https://abload.de/image.php?img=screenshot_20201207-1ywk07.jpg)
+[![Bild screenshot_20201207-1ywk07.jpg auf abload.de](https://abload.de/img/screenshot_20201207-1ywk07.jpg)](https://abload.de/image.php?img=screenshot_20201207-1ywk07.jpg)
 
 #### Video of prototype
 You can see the prototype in action in our project video [here](Docs/MnMDispenserDemo.mov).
 
 #### Testing
-Testing is done with the Espresso framework.
+Testing is done with
+- Espresso
+- powermock
+- robolectric
+- AndroidJUnitRunner
 
 #### UML Class Diagram
 [![Class Diagram](https://abload.de/thumb/classdiagram1tpjon.png)](https://abload.de/image.php?img=classdiagram1tpjon.png)
@@ -105,6 +122,75 @@ Datastructure:
 
 ```
 
+We also save the leaderboard with the highscores of all users for a specific topic.
+
+Datastructure:
+```
+  "Leaders_geography" : [ {
+    "userName" : "peter@outlook.com",
+    "userScore" : 5
+  }, {
+    "userName" : "dieter@outlook.com",
+    "userScore" : 3
+  }, {
+    "userName" : "hans@gmail.com",
+    "userScore" : 2
+  }, {
+    "userName" : "klaus@bluewin.ch",
+    "userScore" : 1
+  }, {
+    "userName" : "jessica@web.de",
+    "userScore" : 0
+  }
+ ]
+```
+
+
 #### Firease Testing 
 Testing of the firebase is done with the @firebase/rules-unit-testing library and locally installed emulators. To install the emulator first install the [firebase cli](https://firebase.google.com/docs/cli#install_the_firebase_cli). It is necessary to login into the gmail account and connect your project to it. Furthermore, to run the test on a physical device you have to be in the same wifi with both devices(lapto & Mobile phone). Then add in the local ip of you laptop
 
+# M&M Dispenser Arduino Program
+
+## Prerequisites
+* [Feather nRF52840 Sense](https://github.com/tamberg/mse-tsm-mobcom/wiki/Feather-nRF52840-Sense) device
+* Grove - Servo on pin 6
+* Adafruit_VL53L0X on pin D2 
+
+## Adding libraries
+* Arduino IDE > Sketch > Include Library > Manage Libraries ...
+* Search for "Adafruit_VL53L0X" > Install
+
+## Uploading the program
+* Connect the Arduino board via USB
+* Arduino IDE > Tools > Board: Adafruit Feather Bluefruit Sense
+* Arduino IDE > Tools > Port: (Adafruit Feather Bluefruit Sense)
+* Arduino IDE > Upload
+
+### Characteristics
+Our arduino device uses a custom GATT service and 3 custom GATT characteristics for connecting the candy machine via BLE to our quiz app.
+- BLECharacteristic mmDispenserStateCharacteristic
+properties are read and notify
+- BLECharacteristic mmDispenserFillingLevelCharacteristic
+properties are read and notify
+- BLECharacteristic mmDispenserDispenseCharacteristic
+properties are read and write
+
+### Code
+#### Setup void setup() {...}
+- void setupVL53L0X() {...} connect the Time-of-flight VL53L0X sensor
+- attach myServo
+- void setupDispenserService() {...} start the service with three characteristics 
+DispenserFillingLevelCharacteristic and DispenserStateCharacteristic set void cccdCallback(...) {...} for enabling notifications
+DispenseCharacteristic sets void writeCallback(...) {...}
+- startAdvertising to connect arduino board with android app
+
+#### void loop() {...}
+notify the measurement from the TOF sensore and current dispenserState with void notifyDispenserState() {...} and void notifyProximity() {...}
+
+#### DispenseCharacteristic
+void writeCallback(...) {...} 
+set dispenser state and call void dispense() {...} to write to myServo to start turning and write again to stop rotation after a short time delay. After dispensing the candy the dispenserState is set to false again.
+
+#### DispenserFillingLevelCharacteristic
+readProximity() {...}
+We use the Time-of-Flight VL53L0X Sensor to measure the distance in the candy dispenser. Range is measured in mm
