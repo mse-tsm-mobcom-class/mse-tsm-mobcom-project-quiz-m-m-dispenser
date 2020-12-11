@@ -43,11 +43,9 @@ class FirebaseLogin : AppCompatActivity() {
         val email = findViewById<TextInputEditText>(R.id.fieldEmail)
         if (TextUtils.isEmpty(email.text) || (email.text.toString() == "required")) {
             email.setText("required")
-
             valid = false
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email.text.toString()).matches()) {
             email.setText("please enter valid email")
-
             valid = false
         }
 
@@ -55,12 +53,10 @@ class FirebaseLogin : AppCompatActivity() {
         if (TextUtils.isEmpty(password.text) || (password.text.toString() == "required")) {
             password.setText("required")
             password.transformationMethod = PasswordTransformationMethod.getInstance()
-
             valid = false
         } else if ((password.text.toString().length < 5) || (password.text.toString() == "password too short")) {
             password.setText("password too short")
             password.transformationMethod = PasswordTransformationMethod.getInstance()
-
             valid = false
         }
         return valid

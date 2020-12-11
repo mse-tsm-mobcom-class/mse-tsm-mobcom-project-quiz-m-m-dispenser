@@ -1,3 +1,8 @@
+// Copyright (c) 2020, Steiner Pascal, Strässle Nikolai, Radinger Martin
+// All rights reserved.
+
+// Licensed under LICENSE, see LICENSE file
+
 package ch.mse.quiz.listeners;
 
 import android.app.Activity;
@@ -36,12 +41,10 @@ public class StartQuizListener implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        /*
         if (!bleGattCallback.isConnected()) {
             toastPrinter.print(activity.getString(R.string.toastNoDispenserConnected));
             return;
         }
-        */
         Log.d(LOG_TAG, "start Quiz!");
 
         int choice = npTopic.getValue();

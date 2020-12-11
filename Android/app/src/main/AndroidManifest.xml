@@ -27,14 +27,18 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ch.mse.quiz.MainActivity" />
         </activity>
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.example.quiz.firebase.FirebaseLogin" />
+        <activity
+            android:name="com.example.quiz.firebase.FirebaseLogin"
+            android:screenOrientation="portrait" />
     </application>
     <uses-feature
         android:name="android.hardware.bluetooth_le"

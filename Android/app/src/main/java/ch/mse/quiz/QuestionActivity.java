@@ -14,6 +14,7 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DatabaseReference;
@@ -41,7 +42,7 @@ public class QuestionActivity extends AppCompatActivity {
     private int questionNumber;
     private String quizTopic;
     private int userScore;
-    public ArrayList<Question> questions = new ArrayList<>();
+    private List<Question> questions = new ArrayList<>();
     private final Handler handler = new Handler();
 
     private TextView tvTimer;
@@ -82,7 +83,10 @@ public class QuestionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_question);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
 
         //how many questions to do? get data from MainActivity calling
         Intent intent = getIntent();
@@ -143,7 +147,6 @@ public class QuestionActivity extends AppCompatActivity {
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference dbRef;
 
-    //TODO: read random questions from FirebaseDB
     public void getQuestions() {
         dbRef = database.getReference("topics/" + quizTopic + "/questions");
 
@@ -173,7 +176,6 @@ public class QuestionActivity extends AppCompatActivity {
         //stopTimer
         countDownTimer.cancel();
         countDownTimer = null;
-
     }
 
     @Override
@@ -369,5 +371,9 @@ public class QuestionActivity extends AppCompatActivity {
 
     public int getCorrectAnswer() {
         return correctAnswer;
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions = questions;
     }
 }
