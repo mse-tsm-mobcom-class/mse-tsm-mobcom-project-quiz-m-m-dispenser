@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import ch.mse.quiz.app.App;
 import ch.mse.quiz.listeners.FirebaseScoreListener;
 import ch.mse.quiz.listeners.StartQuizListener;
 import ch.mse.quiz.models.UserScore;
@@ -39,6 +40,7 @@ public class QuizResultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.activities.add(this);
         setContentView(R.layout.activity_quiz_result);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
@@ -70,11 +72,10 @@ public class QuizResultActivity extends AppCompatActivity {
         restartQuiz.setOnClickListener(v -> {
             Intent intent1 = new Intent(QuizResultActivity.this, MainActivity.class);
             startActivity(intent1);
-            finish();
         });
 
         Button endQuiz = findViewById(R.id.button_endQuiz);
-        endQuiz.setOnClickListener(v -> finishAndRemoveTask());
+        endQuiz.setOnClickListener(v -> App.finish());
     }
 
     private void updateUserScores(UserScore currentPlayer) {

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import ch.mse.quiz.app.App;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.listeners.FirebaseQuestionListener;
 import ch.mse.quiz.listeners.StartQuizListener;
@@ -67,7 +68,6 @@ public class QuestionActivity extends AppCompatActivity {
         Intent intent = new Intent(QuestionActivity.this, QuizResultActivity.class);
         intent.putExtras(extras);
         startActivity(intent);
-        finish();
     };
     private final Runnable newQuestion = () -> {
         createQuestion(currentQuestion);
@@ -82,6 +82,7 @@ public class QuestionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.activities.add(this);
         setContentView(R.layout.activity_question);
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {

@@ -25,6 +25,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import org.jetbrains.annotations.NotNull;
 
+import ch.mse.quiz.app.App;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleScannerService;
 import ch.mse.quiz.listeners.FirebaseTopicListener;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.activities.add(this);
         setContentView(R.layout.activity_main);
         npTopic = findViewById(R.id.npQuestionTopic);
         // init firebase auth and get user
@@ -167,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
     @Override
     public void printError(String message) {
         Toast toast = Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG);
-        TextView toastMessage = (TextView) toast.getView().findViewById(android.R.id.message);
+        TextView toastMessage = toast.getView().findViewById(android.R.id.message);
         toastMessage.setTextColor(Color.RED);
         toast.show();
     }

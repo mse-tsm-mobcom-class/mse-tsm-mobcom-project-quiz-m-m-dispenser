@@ -5,21 +5,17 @@
 
 package com.example.quiz.firebase
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.util.Patterns
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ch.mse.quiz.R
+import ch.mse.quiz.app.App
 import ch.mse.quiz.firebase.LoginLogic
-import com.google.android.gms.tasks.Task
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -32,6 +28,7 @@ class FirebaseLogin : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        App.activities.add(this)
         setContentView(R.layout.activity_firebase_login)
         // init firebase auth and get user
         auth = FirebaseAuth.getInstance()
@@ -71,7 +68,7 @@ class FirebaseLogin : AppCompatActivity() {
         }
 
         auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(LoginLogic(auth,this));
+                .addOnCompleteListener(LoginLogic(auth, this))
     }
 
     fun signIn(view: View) {
@@ -82,7 +79,7 @@ class FirebaseLogin : AppCompatActivity() {
             return
         }
         auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(LoginLogic(auth,this));
+                .addOnCompleteListener(LoginLogic(auth, this))
     }
 
 }

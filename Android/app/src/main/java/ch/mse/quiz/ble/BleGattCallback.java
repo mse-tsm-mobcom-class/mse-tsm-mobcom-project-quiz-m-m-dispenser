@@ -41,6 +41,8 @@ public class BleGattCallback extends BluetoothGattCallback {
     private boolean isLow = false;
     private boolean isTheft = false;
 
+    private BleService bleService;
+
     private BleGattCallback() {
     }
 

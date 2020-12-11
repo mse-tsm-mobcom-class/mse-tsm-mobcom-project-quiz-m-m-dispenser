@@ -5,10 +5,8 @@
 
 package ch.mse.quiz;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewParent;
 
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.intent.Intents;
@@ -20,9 +18,6 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.example.quiz.firebase.FirebaseLogin;
 
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,7 +30,7 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 @LargeTest
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -103,6 +98,7 @@ public class LoginTest {
         materialButton.perform(scrollTo(), click());
 
         Thread.sleep(2000);
-        assertTrue(mActivityTestRule.getActivity().isFinishing());
+        assertEquals(Activity.RESULT_OK, mActivityTestRule.getActivityResult().getResultCode());
+
     }
 }
