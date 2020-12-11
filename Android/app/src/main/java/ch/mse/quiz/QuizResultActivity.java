@@ -74,7 +74,7 @@ public class QuizResultActivity extends AppCompatActivity {
         });
 
         Button endQuiz = findViewById(R.id.button_endQuiz);
-        endQuiz.setOnClickListener(v -> finish());
+        endQuiz.setOnClickListener(v -> finishAndRemoveTask());
     }
 
     private void updateUserScores(UserScore currentPlayer) {

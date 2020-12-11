@@ -6,6 +6,7 @@
 package ch.mse.quiz.models;
 
 public class Question {
+
     private String questionText;
     private int correctAnswer;
     private String answer1;
@@ -24,6 +25,10 @@ public class Question {
         this.answer2 = answer2;
         this.answer3 = answer3;
         this.answer4 = answer4;
+    }
+
+    public void setQuestionText(String questionText) {
+        this.questionText = questionText;
     }
 
     public int getCorrectAnswer() {

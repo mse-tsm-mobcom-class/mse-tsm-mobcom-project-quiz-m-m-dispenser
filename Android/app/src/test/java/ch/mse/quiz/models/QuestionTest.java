@@ -52,4 +52,11 @@ public class QuestionTest extends TestCase {
         question.setAnswer4("Test 4");
         assertEquals("Test 4", question.getAnswer4());
     }
+
+    @Test
+    public void getQuestionText() {
+        Question question = new Question();
+        question.setQuestionText("Test QuestionText");
+        assertEquals("Test QuestionText", question.getQuestionText());
+    }
 }

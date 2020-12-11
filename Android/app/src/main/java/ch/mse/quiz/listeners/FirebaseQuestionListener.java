@@ -59,7 +59,7 @@ public class FirebaseQuestionListener implements ValueEventListener {
             // check if question is already chosen
             while (flag) {
                 //get random number for the questios list
-                pointer = getRandomNumber(0,questions.size() - 1);
+                pointer = getRandomNumber(0, questions.size() - 1);
                 if (!randomList.contains(questions.get(pointer))) {
                     flag = false;
                 }

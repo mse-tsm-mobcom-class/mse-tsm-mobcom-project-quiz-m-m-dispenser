@@ -10,7 +10,6 @@ import android.widget.NumberPicker;
 import java.util.List;
 
 import ch.mse.quiz.QuestionActivity;
-import ch.mse.quiz.R;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.printes.ToastPrinter;
 
@@ -58,6 +57,6 @@ public class StartQuizListener implements View.OnClickListener {
         intent.putExtras(extras);
 
         activity.startActivity(intent);
-        activity.finish();
+        //activity.finish();
     }
 }
