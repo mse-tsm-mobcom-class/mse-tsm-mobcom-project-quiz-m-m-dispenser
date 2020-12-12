@@ -83,6 +83,12 @@ Testing is done with
 [![Class Diagram](https://abload.de/thumb/classdiagram1tpjon.png)](https://abload.de/image.php?img=classdiagram1tpjon.png)
 
 
+### Sensor and Actuator
+
+The visualisation of the sensor data and acutator state is made in the question view. In the bottom on the left side the filling level of the dispenser is displayed. The filling level is shown in percentage (calculation made by distance and container size). In the bottom on the middle the state of the actuator (servo) is displayed. If the servo is waiting the text "nothing to take" is displayed otherwise the text "grab your m&m" is shown.
+
+Another visualisation of the sensor state is our anti-theft system. If the lid of the dispenser will be opened and the filling level before is higher than 20% a toast with the text "Attention Content is stolen" is displayed. The color of the text of this toast is red.
+
 ### Firebase (Backend)
 
 As a backend we used Firebase Real time data to syncronize the App with the necessary data and Firebase Auth to authenticate users and store there scores.
@@ -202,4 +208,4 @@ set dispenser state and call void dispense() {...} to write to myServo to start 
 
 #### DispenserFillingLevelCharacteristic
 readProximity() {...}
-We use the Time-of-Flight VL53L0X Sensor to measure the distance in the candy dispenser. Range is measured in mm. To avoid measurement inaccuracies, the average of the last 5 measurements is used.
+We use the Time-of-Flight VL53L0X Sensor to measure the distance in the candy dispenser. Range is measured in mm. To avoid measurement inaccuracies, the average of the last 5 measurements is used. If current distance is out of range for the sensor, the current distance is set to 2000mm (which is much higher than the size of the container). This indicates, that the lid is open.
