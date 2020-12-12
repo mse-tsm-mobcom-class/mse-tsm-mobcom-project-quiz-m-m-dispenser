@@ -10,6 +10,7 @@ import android.text.TextUtils
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.util.Patterns
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import ch.mse.quiz.R
 import ch.mse.quiz.app.App
@@ -57,7 +58,7 @@ class FirebaseLogin : AppCompatActivity() {
         return valid
     }
 
-    fun createAccount() {
+    fun createAccount(view: View) {
         val email = findViewById<TextInputEditText>(R.id.fieldEmail).text.toString()
         val password = findViewById<TextInputEditText>(R.id.fieldPassword).text.toString()
         Log.d(TAG, "createAccount:$email")
@@ -69,7 +70,7 @@ class FirebaseLogin : AppCompatActivity() {
                 .addOnCompleteListener(LoginLogic(auth, this))
     }
 
-    fun signIn() {
+    fun signIn(view: View) {
         val email = findViewById<TextInputEditText>(R.id.fieldEmail).text.toString()
         val password = findViewById<TextInputEditText>(R.id.fieldPassword).text.toString()
         Log.d(TAG, "createAccount:$email")
