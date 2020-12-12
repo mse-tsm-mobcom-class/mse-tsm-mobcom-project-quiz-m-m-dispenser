@@ -46,19 +46,32 @@ bool dispenserState = false;
 
 void dispense()
 {
+  int pos = 0;
   if (dispenserState)
   {
-    // sets speed of servo. From 0 - 90 for clockwise. From 90 - 180 to anticlockwise.
-    //hint: this servo somewhow uses 94 as stopping point
-    myServo.writeMicroseconds(1520);
-    //servo uses 5.2 sec to do a full turn
-    // delay(1800);
-    //stops servo
-    // myServo.writeMicroseconds(1525);
-    delay(5000);
-    myServo.writeMicroseconds(1501);
+    myServo.write(0);
+    delay(800);
+    // sets angle of servo. 180Degrees is facing upwards and 4 degrees is downwards
+    for (pos = 0; pos <= 180; pos += 1)
+    { // goes from 0 degrees to 180 degrees
+      // in steps of 1 degree
+      myServo.write(pos);
+      // tell servo to go to position in variable 'pos'
+      delay(10); // waits 10ms for the servo to reach the position
+    }
+
+    for (pos = 180; pos >= 0; pos -= 1)
+    { // goes from 180 degrees to 0 degrees
+
+      myServo.write(pos); // tell servo to go to position in variable 'pos'
+      delay(10);          // waits 10ms for the servo to reach the position
+    }
   }
+  myServo.detach();
+  myServo.attach(PIN_SERVO);
+
   dispenserState = false;
+
 }
 
 void connectedCallback(uint16_t connectionHandle)
