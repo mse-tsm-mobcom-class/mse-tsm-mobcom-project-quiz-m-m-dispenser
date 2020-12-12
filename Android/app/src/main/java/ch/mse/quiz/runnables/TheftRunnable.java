@@ -17,6 +17,7 @@ public class TheftRunnable implements Runnable {
 
     @Override
     public void run() {
+        bleGattCallback.getFillingLevelPercentage();
         if (bleGattCallback.isTheft() && !theftNotificationShown) {
             toastPrinter.printError(R.string.current_theft);
             theftNotificationShown = true;

@@ -131,6 +131,7 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
                 }
             }
         });
+        theftThread.start();
     }
 
     public void getTopics() {
