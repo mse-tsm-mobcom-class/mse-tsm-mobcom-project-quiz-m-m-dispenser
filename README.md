@@ -91,7 +91,7 @@ Another visualisation of the sensor state is our anti-theft system. If the lid o
 
 ### Firebase (Backend)
 
-As a backend we used Firebase Real time data to syncronize the App with the necessary data and Firebase Auth to authenticate users and store there scores.
+As a backend we used Firebase Real time data to syncronize the App with the necessary data and Firebase Auth to authenticate users and store there scores. In order to make this project work you have to create a firebase account and open a project. After that you will need to import the datastructure to the Firebase RealTime Database. Note: Don't forget to include the firebase json with the api key in your project structure on the applevel.
 
 #### Firebase Auth
 
@@ -101,7 +101,7 @@ There is a very loose user authentication which is not thought as a security mea
 
 The Firebase realtime Database is used to store questions acording to different topics. A user can choose a topic in the beginning of a question round and the app will query the Realtime Database for a list of questions.
 
-Datastructure:
+Datastructure for the questions:
 ```
 {
   "topics" : {
@@ -139,7 +139,7 @@ Datastructure:
 
 We also save the leaderboard with the highscores of all users for a specific topic.
 
-Datastructure:
+Datastructure for the leaderboard:
 ```
   "Leaders_geography" : [ {
     "userName" : "peter@outlook.com",
