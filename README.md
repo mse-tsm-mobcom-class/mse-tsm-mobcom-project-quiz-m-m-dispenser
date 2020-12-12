@@ -10,6 +10,7 @@
 
 ## Docs
 * [Slides](Docs/Slides.pdf) (PDF)
+* [Presentation Online](https://prezi.com/view/LWEC12uuIKtAcy4wxdDC/)
 * [Video](Docs/MnMDispenserDemo.mov) (MOV)
 
 ## Code
@@ -23,7 +24,13 @@
 #### Prerequisites
 * Android smartphone with BLE, API Level 26+ 
 * Java Version VERSION_1_8
-* Gradle 
+* Gradle
+
+#### Running environment
+
+The tested android developement environment looks like the following. For other environments we can not guarantee, that all of the tests works. 
+
+![Bild screenshot_20201207-16ujzq.jpg auf abload.de](Docs/images/android_env.png)
 
 #### Building the app
 * Android Studio > Build > Make Project
