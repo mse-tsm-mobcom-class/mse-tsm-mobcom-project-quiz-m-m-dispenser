@@ -76,7 +76,7 @@ Testing is done with
 * start an AVD (and disconnect your android device if it is connected to your computer)
 * start sonarqube over docker-compose with the following command in your android project root: `docker-compose up -d`
 * run the command in your android project root: `./gradlew  clean sonarqube`
-* go to [localhost:9090](http://localhost:9090) and check the project (username/password: admin)
+* go to [localhost:9000](http://localhost:9000) and check the project (username/password: admin, projectname: Quiz)
 
 
 #### UML Class Diagram
