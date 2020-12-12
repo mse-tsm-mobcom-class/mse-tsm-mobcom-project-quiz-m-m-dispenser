@@ -168,8 +168,9 @@ Testing of the firebase is done with the @firebase/rules-unit-testing library an
 
 ## Prerequisites
 * [Feather nRF52840 Sense](https://github.com/tamberg/mse-tsm-mobcom/wiki/Feather-nRF52840-Sense) device
-* Grove - Servo on pin 6
+* Grove - [Servo](https://www.distrelec.ch/en/grove-servo-seeed-studio-316010005/p/30069966?channel=b2c&price_gs=12.924&source=googleps&ext_cid=shgooaqchen-blcss&kw=%7Bkeyword%7D&gclid=Cj0KCQiA8dH-BRD_ARIsAC24umZxAaDpbZoTRaQGgg7EWPJz9kLlttsf8TR-gWFbqXpstKS-69iycZEaAsiBEALw_wcB) on pin 6
 * Adafruit_VL53L0X on pin D2 
+* Tof sensor (e.g: [VL53L0X](https://www.adafruit.com/product/3317))
 
 ## Adding libraries
 * Arduino IDE > Sketch > Include Library > Manage Libraries ...
@@ -209,3 +210,6 @@ set dispenser state and call void dispense() {...} to write to myServo to start 
 #### DispenserFillingLevelCharacteristic
 readProximity() {...}
 We use the Time-of-Flight VL53L0X Sensor to measure the distance in the candy dispenser. Range is measured in mm. To avoid measurement inaccuracies, the average of the last 5 measurements is used. If current distance is out of range for the sensor, the current distance is set to 2000mm (which is much higher than the size of the container). This indicates, that the lid is open.
+
+# Dispenser construction
+The Dispenser got constructed with some modifications from [this](https://www.buildsomething.com/plans/PA57A1F77F2D3B445/Desktop-Candy-Dispenser) site.
