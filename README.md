@@ -177,11 +177,11 @@ Testing of the firebase is done with the @firebase/rules-unit-testing library an
 
 ### Characteristics
 Our arduino device uses a custom GATT service and 3 custom GATT characteristics for connecting the candy machine via BLE to our quiz app.
-- BLECharacteristic mmDispenserStateCharacteristic
+- BLECharacteristic mmDispenserStateCharacteristic => notify the state of the servo (running or waiting)
 properties are read and notify
-- BLECharacteristic mmDispenserFillingLevelCharacteristic
+- BLECharacteristic mmDispenserFillingLevelCharacteristic => notify the filling level by distance in mm
 properties are read and notify
-- BLECharacteristic mmDispenserDispenseCharacteristic
+- BLECharacteristic mmDispenserDispenseCharacteristic => starts the servo from remote
 properties are read and write
 
 ### Code
@@ -202,4 +202,4 @@ set dispenser state and call void dispense() {...} to write to myServo to start 
 
 #### DispenserFillingLevelCharacteristic
 readProximity() {...}
-We use the Time-of-Flight VL53L0X Sensor to measure the distance in the candy dispenser. Range is measured in mm
+We use the Time-of-Flight VL53L0X Sensor to measure the distance in the candy dispenser. Range is measured in mm. To avoid measurement inaccuracies, the average of the last 5 measurements is used.

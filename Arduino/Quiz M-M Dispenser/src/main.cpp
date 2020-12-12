@@ -202,10 +202,7 @@ void setupVL53L0X()
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial)
-  {
-    delay(10);
-  } // only if usb connected
+  
   Serial.println("Setup");
 
   setupVL53L0X();
