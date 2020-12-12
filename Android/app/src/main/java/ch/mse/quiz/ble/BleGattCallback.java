@@ -3,6 +3,8 @@
 
 // Licensed under LICENSE, see LICENSE file
 
+// Based on https://github.com/tamberg/mse-tsm-mobcom licensed under CCO 1.0
+
 package ch.mse.quiz.ble;
 
 import android.bluetooth.BluetoothGatt;
