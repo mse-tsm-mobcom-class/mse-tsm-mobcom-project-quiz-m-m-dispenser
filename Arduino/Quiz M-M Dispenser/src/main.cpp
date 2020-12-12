@@ -180,6 +180,8 @@ void readProximity()
   }
   else
   {
+    // too high value will trigger theft protection
+    rangeInMilimeter = 2000;
     Serial.println(" out of range ");
   }
 }
