@@ -24,8 +24,17 @@ public class AppTest extends TestCase {
     @Test
     public void finish() {
         Activity activity = PowerMockito.mock(Activity.class);
-        App.activities.add(activity);
+        App.addActivity(activity);
         App.finish();
-        assertEquals(0, App.activities.size());
+        assertEquals(0, App.getActivitySize());
+    }
+
+    @Test
+    public void addAndRemove() {
+        Activity activity = PowerMockito.mock(Activity.class);
+        App.addActivity(activity);
+        assertEquals(1, App.getActivitySize());
+        App.removeActivity(activity);
+        assertEquals(0, App.getActivitySize());
     }
 }

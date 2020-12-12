@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,9 +41,12 @@ public class QuizResultActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.activities.add(this);
+        App.addActivity(this);
         setContentView(R.layout.activity_quiz_result);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        ActionBar actionBar = getSupportActionBar();
+        if (null != actionBar) {
+            actionBar.setDisplayHomeAsUpEnabled(false);
+        }
 
         //get results from this quiz round
         Intent intent = getIntent();
@@ -58,8 +62,10 @@ public class QuizResultActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //set current user values
         UserScore currentPlayer = new UserScore();
-        currentPlayer.setUserName(currentUser.getEmail());
-        currentPlayer.setUserScore(userScore);
+        if (null != currentUser) {
+            currentPlayer.setUserName(currentUser.getEmail());
+            currentPlayer.setUserScore(userScore);
+        }
 
         //update & read leaderboard
         playerScores = new ArrayList<>();
@@ -72,6 +78,8 @@ public class QuizResultActivity extends AppCompatActivity {
         restartQuiz.setOnClickListener(v -> {
             Intent intent1 = new Intent(QuizResultActivity.this, MainActivity.class);
             startActivity(intent1);
+            App.removeActivity(this);
+            finish();
         });
 
         Button endQuiz = findViewById(R.id.button_endQuiz);
@@ -87,7 +95,7 @@ public class QuizResultActivity extends AppCompatActivity {
     }
 
     public void updateList() {
-        playerScores.sort((o1, o2) -> o1.getUserScore() - o2.getUserScore());
+        playerScores.sort((o1, o2) -> o2.getUserScore() - o1.getUserScore());
         //write to DB
         dbRef = database.getReference("Leaders_" + quizTopic);
         dbRef.setValue(playerScores);

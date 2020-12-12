@@ -70,6 +70,15 @@ Testing is done with
 - robolectric
 - AndroidJUnitRunner
 
+#### Sonarqube
+* install [docker](https://docs.docker.com/get-docker/)
+* install [docker-compose](https://docs.docker.com/compose/install/)
+* start an AVD (and disconnect your android device if it is connected to your computer)
+* start sonarqube over docker-compose with the following command in your android project root: `docker-compose up -d`
+* run the command in your android project root: `./gradlew  clean sonarqube`
+* go to [localhost:9090](http://localhost:9090) and check the project (username/password: admin)
+
+
 #### UML Class Diagram
 [![Class Diagram](https://abload.de/thumb/classdiagram1tpjon.png)](https://abload.de/image.php?img=classdiagram1tpjon.png)
 
@@ -147,7 +156,7 @@ Datastructure:
 
 
 #### Firease Testing 
-Testing of the firebase is done with the @firebase/rules-unit-testing library and locally installed emulators. To install the emulator first install the [firebase cli](https://firebase.google.com/docs/cli#install_the_firebase_cli). It is necessary to login into the gmail account and connect your project to it. Furthermore, to run the test on a physical device you have to be in the same wifi with both devices(lapto & Mobile phone). Then add in the local ip of you laptop
+Testing of the firebase is done with the @firebase/rules-unit-testing library and locally installed emulators. To install the emulator first install the [firebase cli](https://firebase.google.com/docs/cli#install_the_firebase_cli). It is necessary to login into the gmail account and connect your project to it. Furthermore, to run the test on a physical device you have to be in the same wifi with both devices(lapto & Mobile phone). Then add in the local ip of you laptop.
 
 # M&M Dispenser Arduino Program
 

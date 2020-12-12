@@ -68,6 +68,8 @@ public class QuestionActivity extends AppCompatActivity {
         Intent intent = new Intent(QuestionActivity.this, QuizResultActivity.class);
         intent.putExtras(extras);
         startActivity(intent);
+        App.removeActivity(this);
+        finish();
     };
     private final Runnable newQuestion = () -> {
         createQuestion(currentQuestion);
@@ -82,7 +84,7 @@ public class QuestionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.activities.add(this);
+        App.addActivity(this);
         setContentView(R.layout.activity_question);
         ActionBar supportActionBar = getSupportActionBar();
         if (supportActionBar != null) {

@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.quiz.firebase.FirebaseLogin;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import ch.mse.quiz.app.App;
 import ch.mse.quiz.ble.BleGattCallback;
 import ch.mse.quiz.ble.BleScannerService;
+import ch.mse.quiz.firebase.FirebaseLogin;
 import ch.mse.quiz.listeners.FirebaseTopicListener;
 import ch.mse.quiz.listeners.StartQuizListener;
 import ch.mse.quiz.permission.PermissionService;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.activities.add(this);
+        App.addActivity(this);
         setContentView(R.layout.activity_main);
         npTopic = findViewById(R.id.npQuestionTopic);
         // init firebase auth and get user
@@ -178,5 +178,11 @@ public class MainActivity extends AppCompatActivity implements ToastPrinter {
     @Override
     public void printError(int id) {
         printError(getString(id));
+    }
+
+    @Override
+    public void onBackPressed() {
+        // exit app on back pressed
+        App.finish();
     }
 }

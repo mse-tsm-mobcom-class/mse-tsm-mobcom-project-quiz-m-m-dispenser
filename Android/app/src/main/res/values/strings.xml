@@ -54,4 +54,7 @@
     <string name="timerIsUp">time is up!</string>
     <string name="grapMnM"><![CDATA[grab your m&m]]></string>
     <string name="nothingToTake">nothing to take</string>
+    <string name="loginFieldRequired">required</string>
+    <string name="loginFieldRequiredEmail">please enter valid email</string>
+    <string name="loginFieldPasswordToShort">password too short</string>
 </resources>

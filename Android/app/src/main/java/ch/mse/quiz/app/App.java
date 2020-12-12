@@ -6,12 +6,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class App {
-    public static List<Activity> activities = new ArrayList<>();
+    private static final List<Activity> activities = new ArrayList<>();
+
+    private App() {
+    }
 
     public static void finish() {
         for (int i = 0; i < activities.size(); i++) {
             activities.get(i).finish();
-            activities.remove(i);
         }
+        activities.clear();
+    }
+
+    public static void addActivity(Activity activity) {
+        activities.add(activity);
+    }
+
+    public static void removeActivity(Activity activity) {
+        activities.remove(activity);
+    }
+
+    public static int getActivitySize() {
+        return activities.size();
     }
 }
