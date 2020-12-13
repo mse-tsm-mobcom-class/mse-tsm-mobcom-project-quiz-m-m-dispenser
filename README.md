@@ -9,7 +9,7 @@
 * [Martin Radinger](https://github.com/seros76)
 
 ## Docs
-* [Slides](Docs/Slides.pdf) (PDF)
+* [Slides](Docs/prezi_export.pdf) (PDF)
 * [Presentation Online](https://prezi.com/view/LWEC12uuIKtAcy4wxdDC/)
 * [PoC Video Online](https://youtu.be/ZRKwHS1TnXU)
 * [PoC Video Download](https://www.dropbox.com/s/9v9gc0o5c7ja5q9/MnMDispenserPoC.mp4?dl=0)
