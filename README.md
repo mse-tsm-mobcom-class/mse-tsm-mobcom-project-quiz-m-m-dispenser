@@ -221,3 +221,7 @@ We use the Time-of-Flight VL53L0X Sensor to measure the distance in the candy di
 
 # Dispenser construction
 The Dispenser got constructed with some modifications from [this](https://www.buildsomething.com/plans/PA57A1F77F2D3B445/Desktop-Candy-Dispenser) site.
+<br>
+<img src="./Docs/images/dispenser_front.jpg" width="250" height="325">
+<img src="./Docs/images/dispenser_front_2.jpg" width="250" height="325">
+<img src="./Docs/images/dispenser_back.jpg" width="250" height="325">
