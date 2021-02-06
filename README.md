@@ -225,3 +225,5 @@ The Dispenser got constructed with some modifications from [this](https://www.bu
 <img src="./Docs/images/dispenser_front.jpg" width="250" height="325">
 <img src="./Docs/images/dispenser_front_2.jpg" width="250" height="325">
 <img src="./Docs/images/dispenser_back.jpg" width="250" height="325">
+<br>
+Thanks to [Tüftellabor](https://www.tueftellaborzug.ch/home) in Zug for the support and free usage of their equipments!
